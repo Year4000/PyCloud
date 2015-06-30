@@ -18,6 +18,7 @@
 
 import os
 import subprocess
+import shutil
 
 FNULL=open(os.devnull, 'w')
 
@@ -36,4 +37,12 @@ def install(name):
 """ Make sure current user is root """
 def is_root():
     return os.getuid() == 0
+
+
+""" Copy a directory or file to path """
+def copy(in_path, out_path):
+    if os.path.isdir(in_path):
+        shutil.copytree(in_path, out_path)
+    else:
+        shutil.copy(in_path, out_path)
 

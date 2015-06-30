@@ -17,6 +17,7 @@
 import os
 from pycloud.utils import install
 from pycloud.utils import is_root
+from pycloud.utils import copy
 
 
 INSTALL_PATH='/opt/year4000/'
@@ -36,6 +37,12 @@ def main():
         os.makedirs(INSTALL_PATH)
     except Exception:
         print('Install path ' + INSTALL_PATH + ' exists, skipping stage')
+
+    print('Copying files to install path')
+    try:
+        copy('pycloud', INSTALL_PATH + 'pycloud')
+    except Exception:
+        print('PyCloud is already installed, remove ' + INSTALL_PATH + 'pycloud')
 
 
 """ Run the install script """ 
