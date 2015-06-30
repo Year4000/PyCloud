@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
 from pycloud.utils import install
 from pycloud.utils import is_root
 
 
+INSTALL_PATH='/opt/year4000/'
 REQUIREMENTS=('tmux', 'python-redis')
 
 
@@ -28,6 +30,12 @@ def main():
     print('Checking and installing requirements')
     for need in REQUIREMENTS:
         install(need)
+
+    print('Creating install path directories')
+    try:
+        os.makedirs(INSTALL_PATH)
+    except Exception:
+        print('Install path ' + INSTALL_PATH + ' exists, skipping stage')
 
 
 """ Run the install script """ 
