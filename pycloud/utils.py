@@ -45,4 +45,3 @@ def copy(in_path, out_path):
         shutil.copytree(in_path, out_path)
     else:
         shutil.copy(in_path, out_path)
-

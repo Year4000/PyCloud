@@ -28,26 +28,27 @@ REQUIREMENTS=('tmux', 'python-redis')
 def main():
     global REQUIREMENTS
 
-    print('Checking and installing requirements')
+    print('INFO: Checking and installing requirements')
     for need in REQUIREMENTS:
+        print(' - ', end='')
         install(need)
 
-    print('Creating install path directories')
+    print('INFO: Creating install path directories')
     try:
         os.makedirs(INSTALL_PATH)
     except Exception:
-        print('Install path ' + INSTALL_PATH + ' exists, skipping stage')
+        print('NOTICE: Install path ' + INSTALL_PATH + ' exists, skipping stage')
 
-    print('Copying files to install path')
+    print('INFO: Copying files to install path')
     try:
         copy('pycloud', INSTALL_PATH + 'pycloud')
     except Exception:
-        print('PyCloud is already installed, remove ' + INSTALL_PATH + 'pycloud')
+        print('ERROR: PyCloud is already installed, remove ' + INSTALL_PATH + 'pycloud')
 
 
 """ Run the install script """ 
 if __name__ == '__main__':
     if not is_root():
-        print('Error: Need to run as root')
+        print('ERROR: Need to run as root')
     else:
         main()
