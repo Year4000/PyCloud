@@ -15,3 +15,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """ The redis handler that will handle the PubSub channel """
+
+INPUT_CHANNEL = "year4000.pycloud.input"
+
+
+""" Listen to the INPUT_CHANNEL and process the node """
+class InputMessaging:
+
+    """ Create the instances with redis """
+    def __init__(self, redis):
+        self.redis = redis
+
+
+    """ The thread that runs and process the data """
+    def clock(self):
+        channel = self.redis.pubsub()
+        channel.subscribe(INPUT_CHANNEL)
+        
+        for data in channel.listen():
+            if not data['type'] == 'message': continue
+
+            # todo process the data for tmux
+            print("INPUT: " + str(data))
