@@ -15,3 +15,34 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 """ The daemon process that manages the servers """
+
+import threading
+from redis import Redis
+from redis_handler import InputMessaging
+
+
+""" Deploy all the needed threads """
+def main():
+    redis = Redis()
+    redis_messaging = InputMessaging(redis)
+
+    # Start in put messaging channel
+    messaging = threading.Thread(target=redis_messaging.clock)
+    messaging.setDaemon(True)
+    messaging.start()
+
+    # Keep the main thread running
+    read_loop()
+
+
+""" An infinant loop """
+def read_loop():
+    try:
+        while True:
+            input("")
+    except:
+        print("\nEnding...")
+
+
+if __name__ == '__main__':
+    main()
