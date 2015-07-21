@@ -17,9 +17,38 @@
 """ Wrapper to create tmux sessions """
 
 import subprocess
+from utils import generate_id
 
 
 SESSION_DIR = '/var/run/year4000/pycloud/'
+
+
+""" The session object that represents the session """
+class Session:
+    def __init__(self, cloud):
+        self.id = generate_id()
+        self.cloud = cloud
+
+
+    """ Create the session """
+    def create(self):
+        # todo create the session environment
+        print("Create session: " + self.id)
+
+
+    """ Remove the session """
+    def remove(self):
+        # todo stop the session
+        # todo remove the session files
+        print("Remove session: " + self.id)
+
+
+    """ Start the session """
+    def start(self, script):
+        # todo write the script to the session
+        # todo start the tmux session
+        # todo start the script
+        print("Start session: " + self.id)
 
 
 """ The wrapper to handle TMUX """
