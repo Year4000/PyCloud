@@ -20,11 +20,10 @@ import os
 import subprocess
 import shutil
 
-FNULL=open(os.devnull, 'w')
+FNULL = open(os.devnull, 'w')
 
 """ Check if their is output if not install it """
 def install(name):
-    FNULL = open(os.devnull, 'w')
     out = subprocess.call(['dpkg', '-s', name], stdout=FNULL, stderr=FNULL)
 
     if out == 0:
