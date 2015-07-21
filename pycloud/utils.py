@@ -19,6 +19,8 @@
 import os
 import subprocess
 import shutil
+import time
+import random
 
 FNULL = open(os.devnull, 'w')
 
@@ -44,3 +46,12 @@ def copy(in_path, out_path):
         shutil.copytree(in_path, out_path)
     else:
         shutil.copy(in_path, out_path)
+
+
+""" Create an id to use to identify processes """
+def generate_id():
+    random_number = int(random.random() * 0xFFFFFF)
+    system_time = int(time.time())
+    process_id = os.getpid()
+
+    return hex(random_number + process_id + system_time)[2:]
