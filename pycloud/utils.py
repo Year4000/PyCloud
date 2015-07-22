@@ -22,10 +22,12 @@ import shutil
 import time
 import random
 
+
 FNULL = open(os.devnull, 'w')
 
-""" Check if their is output if not install it """
+
 def install(name):
+    """ Check if their is output if not install it """
     out = subprocess.call(['dpkg', '-s', name], stdout=FNULL, stderr=FNULL)
 
     if out == 0:
@@ -35,21 +37,21 @@ def install(name):
         subprocess.call(['apt-get', 'install', '-y', name], stdout=FNULL, stderr=FNULL)
 
 
-""" Make sure current user is root """
 def is_root():
+    """ Make sure current user is root """
     return os.getuid() == 0
 
 
-""" Copy a directory or file to path """
 def copy(in_path, out_path):
+    """ Copy a directory or file to path """
     if os.path.isdir(in_path):
         shutil.copytree(in_path, out_path)
     else:
         shutil.copy(in_path, out_path)
 
 
-""" Create an id to use to identify processes """
 def generate_id():
+    """ Create an id to use to identify processes """
     random_number = int(random.random() * 0xFFFFFF)
     system_time = int(time.time())
     process_id = os.getpid()

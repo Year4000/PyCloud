@@ -22,35 +22,34 @@ from redis_handler import InputMessaging
 from session_manager import Session
 
 
-""" The cloud instance that stores the sessions that are running """
 class Cloud:
-    __inst = None
+    """ The cloud instance that stores the sessions that are running """
 
+    __inst = None
 
     def __init__(self):
         Cloud.__inst = self
         self.sessions = []
 
-
-    """ Get the cloud instance """
     @staticmethod
     def get():
-        if Cloud.__inst == None:
+        """ Get the cloud instance """
+        if Cloud.__inst is None:
             Cloud.__inst = Cloud()
 
         return Cloud.__inst
 
-
-    """ Create a new session from the json input """
     def create_session(self):
+        """ Create a new session from the json input """
         # todo add args to method
         session = Session(self)
         self.sessions.append(session)
         session.create()
 
 
-""" Deploy all the needed threads """
 def main():
+    """ Deploy all the needed threads """
+
     redis = Redis()
     redis_messaging = InputMessaging(redis)
 
@@ -63,8 +62,9 @@ def main():
     read_loop()
 
 
-""" An infinant loop """
 def read_loop():
+    """ An infinant loop """
+
     try:
         while True:
             input("")

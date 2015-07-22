@@ -16,40 +16,42 @@
 
 """ The redis handler that will handle the PubSub channel """
 
+
 INPUT_CHANNEL = "year4000.pycloud.input"
 
-""" Base class for listening on the redis channel """
+
 class Messaging:
-    """ Create the instances with redis """
+    """ Base class for listening on the redis channel """
+
     def __init__(self, redis, channel):
+        """ Create the instances with redis """
         self.redis = redis
         self.channel = channel
 
-
-    """ The method that will run for ever """
     def clock(self):
+        """ The method that will run for ever """
         channel = self.redis.pubsub()
         channel.subscribe(self.channel)
         
         for data in channel.listen():
-            if not data['type'] == 'message': continue
+            if not data['type'] == 'message':
+                continue
 
             self.process(data)
 
-
-    """ The method that will run for ever """
     def process(self, data):
+        """ The method that will run for ever """
         raise NotImplementedError()
 
 
-""" Listen to the INPUT_CHANNEL and process the node """
 class InputMessaging(Messaging):
-    """ Create the instances with redis """
+    """ Listen to the INPUT_CHANNEL and process the node """
+
     def __init__(self, redis):
+        """ Create the instances with redis """
         Messaging.__init__(self, redis, INPUT_CHANNEL)
 
-
-    """ The thread that runs and process the data """
     def process(self, data):
+        """ The thread that runs and process the data """
         # todo process the data for tmux
         print("INPUT: " + str(data))

@@ -23,35 +23,35 @@ from utils import generate_id
 SESSION_DIR = '/var/run/year4000/pycloud/'
 
 
-""" The session object that represents the session """
 class Session:
+    """ The session object that represents the session """
+
     def __init__(self, cloud):
+        """ Generate this session with the cloud instance """
         self.id = generate_id()
         self.cloud = cloud
 
-
-    """ Create the session """
     def create(self):
+        """ Create the session """
         # todo create the session environment
         print("Create session: " + self.id)
 
-
-    """ Remove the session """
     def remove(self):
+        """ Remove the session """
         # todo stop the session
         # todo remove the session files
         print("Remove session: " + self.id)
 
-
-    """ Start the session """
     def start(self, script):
+        """ Start the session """
         # todo write the script to the session
         # todo start the tmux session
         # todo start the script
         print("Start session: " + self.id)
 
 
-""" The wrapper to handle TMUX """
 class Tmux:
+    """ The wrapper to handle TMUX """
+
     def __cmd(self, *command):
         subprocess.call(command)
