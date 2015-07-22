@@ -21,7 +21,7 @@ from pycloud.utils import copy
 
 
 INSTALL_PATH='/opt/year4000/'
-REQUIREMENTS=('tmux', 'python-redis')
+REQUIREMENTS=('tmux', 'python3-redis')
 
 
 """ The main function to run """
