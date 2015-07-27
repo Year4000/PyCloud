@@ -17,9 +17,10 @@
 """ The daemon process that manages the servers """
 
 import threading
+from time import time
 from redis import Redis
-from .redis_handler import InputMessaging
-from .session_manager import Session
+from .redis_handler import InputMessaging, RankMessaging
+from .session_manager import Session, Rank
 from .utils import generate_id
 
 
@@ -30,7 +31,10 @@ class Cloud:
 
     def __init__(self):
         Cloud.__inst = self
+        self.id = generate_id()
         self.sessions = []
+        self.__ranks = set()
+        self.__ranks.add(self.generate_rank())
 
     @staticmethod
     def get():
@@ -47,15 +51,66 @@ class Cloud:
         self.sessions.append(session)
         session.create()
 
+    def remove_ranks(self):
+        """ Get the ranks and sort them """
+        current_time = time() - 2
+        copy_ranks = self.__ranks.copy()
+
+        for rank in copy_ranks:
+            if rank.time < current_time:
+                self.__ranks.remove(rank)
+
+    def get_ranks(self):
+        """ Remove outdated ranks """
+        ranks = []
+
+        for rank in self.__ranks:
+            if rank not in ranks:
+                ranks.append(rank)
+
+        ranks.sort()
+
+        return ranks
+
+    def add_rank(self, rank):
+        """ Add the rank to the ranks list """
+
+        if not isinstance(rank, Rank):
+            raise TypeError("Rank must be a Rank type")
+
+        if rank not in self.__ranks:
+            self.__ranks.add(rank)
+        else:
+            self.__ranks.remove(rank)
+            self.__ranks.add(rank)
+
+    def generate_rank(self):
+        """ Generate a rank object to send through redis """
+        score = len(self.sessions)
+        return Rank(self.id, score, time())
+
 
 def main():
     """ Deploy all the needed threads """
+    cloud = Cloud.get()
+    print("PyCloud ID: " + cloud.id)
 
     redis = Redis()
-    redis_messaging = InputMessaging(redis)
+    redis_input_messaging = InputMessaging(redis)
+    redis_rank_messaging = RankMessaging(cloud, redis)
 
     # Start in put messaging channel
-    messaging = threading.Thread(target=redis_messaging.clock)
+    messaging = threading.Thread(target=redis_input_messaging.clock)
+    messaging.setDaemon(True)
+    messaging.start()
+
+    # Start to accept rank score
+    messaging = threading.Thread(target=redis_rank_messaging.clock)
+    messaging.setDaemon(True)
+    messaging.start()
+
+    # Start the clock to send the rank score
+    messaging = threading.Thread(target=redis_rank_messaging.send)
     messaging.setDaemon(True)
     messaging.start()
 

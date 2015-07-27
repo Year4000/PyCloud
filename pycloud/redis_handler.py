@@ -16,8 +16,12 @@
 
 """ The redis handler that will handle the PubSub channel """
 
+from time import sleep, time
+from json import JSONDecoder
+from .session_manager import Rank
 
 INPUT_CHANNEL = "year4000.pycloud.input"
+RANK_CHANNEL = "year4000.pycloud.rank"
 
 
 class Messaging:
@@ -55,3 +59,30 @@ class InputMessaging(Messaging):
         """ The thread that runs and process the data """
         # todo process the data for tmux
         print("INPUT: " + str(data))
+
+
+class RankMessaging(Messaging):
+    """ Listen to the INPUT_CHANNEL and process the node """
+
+    def __init__(self, cloud, redis):
+        """ Create the instances with redis """
+        Messaging.__init__(self, redis, RANK_CHANNEL)
+        self.cloud = cloud
+
+    def process(self, data):
+        """ The thread that runs and process the data """
+        json = JSONDecoder().decode(data['data'])
+        rank = Rank(json['id'], json['score'], json['time'])
+        self.cloud.add_rank(rank)
+        print(self.cloud.get_ranks())
+
+    def send(self):
+        """ Send the PyCloud score to the other instances """
+        while True:
+            # Remove outdated ranks
+            self.cloud.remove_ranks()
+
+            # Send rank
+            json = str(self.cloud.generate_rank())
+            self.redis.publish(self.channel, json)
+            sleep(1)

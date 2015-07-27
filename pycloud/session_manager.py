@@ -17,10 +17,34 @@
 """ Wrapper to create tmux sessions """
 
 import subprocess
+from json import JSONEncoder
 from .utils import generate_id
 
 
 SESSION_DIR = '/var/run/year4000/pycloud/'
+
+
+class Rank:
+    """ The object that represents the rank of each object """
+
+    def __init__(self, id, score, time):
+        self.id = id
+        self.score = int(score)
+        self.time = time
+
+    __lt__ = lambda self, other: self.score < other.score
+    __le__ = lambda self, other: self.score <= other.score
+    __gt__ = lambda self, other: self.score > other.score
+    __ge__ = lambda self, other: self.score >= other.score
+    __eq__ = lambda self, other: self.id == other.id
+    __ne__ = lambda self, other: self.id != other.id
+    __hash__ = lambda self: int(self.id, 16)
+
+    def __str__(self):
+        return JSONEncoder().encode({'id': self.id, 'score': self.score, 'time': self.time})
+
+    def __repr__(self):
+        return "Rank" + self.__str__()
 
 
 class Session:
