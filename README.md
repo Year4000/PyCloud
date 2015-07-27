@@ -9,5 +9,7 @@ with redis messaging channels.
 Run the python script `install.py`
 
 
-## Channels
+## Running
+
+> python -m pycloud.cloud_daemon
 
