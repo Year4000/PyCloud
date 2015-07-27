@@ -17,7 +17,7 @@
 """ Wrapper to create tmux sessions """
 
 import subprocess
-from utils import generate_id
+from .utils import generate_id
 
 
 SESSION_DIR = '/var/run/year4000/pycloud/'

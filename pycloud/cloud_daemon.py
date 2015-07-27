@@ -18,8 +18,9 @@
 
 import threading
 from redis import Redis
-from redis_handler import InputMessaging
-from session_manager import Session
+from .redis_handler import InputMessaging
+from .session_manager import Session
+from .utils import generate_id
 
 
 class Cloud:
