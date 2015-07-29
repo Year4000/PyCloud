@@ -29,6 +29,11 @@ from .utils import generate_id
 
 FILE_LOG = "/var/log/pycloud/" + str(datetime.date.today()) + ".log"
 
+_log = logging.getLogger("pycloud")
+_log.setLevel(logging.INFO)
+_log.addHandler(logging.StreamHandler(stream=sys.stdout))
+_log.addHandler(logging.FileHandler(FILE_LOG))
+
 
 class Cloud:
     """ The cloud instance that stores the sessions that are running """
@@ -99,11 +104,7 @@ class Cloud:
 def main():
     """ Deploy all the needed threads """
     cloud = Cloud.get()
-    log = logging.getLogger("pycloud")
-    log.setLevel(logging.INFO)
-    log.addHandler(logging.StreamHandler(stream=sys.stdout))
-    log.addHandler(logging.FileHandler(FILE_LOG))
-    log.info("PyCloud ID: " + cloud.id)
+    _log.info("PyCloud ID: " + cloud.id)
 
     redis = Redis()
     redis_input_messaging = InputMessaging(redis)
@@ -141,7 +142,7 @@ def read_loop():
         while True:
             input("")
     except:
-        print("\nEnding...")
+        _log.info("\nEnding...")
 
 
 if __name__ == '__main__':
