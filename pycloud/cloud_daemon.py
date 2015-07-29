@@ -33,22 +33,22 @@ FILE_LOG = "/var/log/pycloud/" + str(datetime.date.today()) + ".log"
 class Cloud:
     """ The cloud instance that stores the sessions that are running """
 
-    __inst = None
+    _inst = None
 
     def __init__(self):
-        Cloud.__inst = self
+        Cloud._inst = self
         self.id = generate_id()
         self.sessions = []
-        self.__ranks = set()
-        self.__ranks.add(self.generate_rank())
+        self._ranks = set()
+        self._ranks.add(self.generate_rank())
 
     @staticmethod
     def get():
         """ Get the cloud instance """
-        if Cloud.__inst is None:
-            Cloud.__inst = Cloud()
+        if Cloud._inst is None:
+            Cloud._inst = Cloud()
 
-        return Cloud.__inst
+        return Cloud._inst
 
     def create_session(self):
         """ Create a new session from the json input """
@@ -60,17 +60,17 @@ class Cloud:
     def remove_ranks(self):
         """ Get the ranks and sort them """
         current_time = time() - 1
-        copy_ranks = self.__ranks.copy()
+        copy_ranks = self._ranks.copy()
 
         for rank in copy_ranks:
             if rank.time < current_time:
-                self.__ranks.remove(rank)
+                self._ranks.remove(rank)
 
     def get_ranks(self):
         """ Remove outdated ranks """
         ranks = []
 
-        for rank in self.__ranks:
+        for rank in self._ranks:
             if rank not in ranks:
                 ranks.append(rank)
 
@@ -84,11 +84,11 @@ class Cloud:
         if not isinstance(rank, Rank):
             raise TypeError("Rank must be a Rank type")
 
-        if rank not in self.__ranks:
-            self.__ranks.add(rank)
+        if rank not in self._ranks:
+            self._ranks.add(rank)
         else:
-            self.__ranks.remove(rank)
-            self.__ranks.add(rank)
+            self._ranks.remove(rank)
+            self._ranks.add(rank)
 
     def generate_rank(self):
         """ Generate a rank object to send through redis """
