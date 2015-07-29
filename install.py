@@ -18,10 +18,11 @@ import os
 from pycloud.utils import install
 from pycloud.utils import is_root
 from pycloud.utils import copy
+from pycloud.cloud_daemon import LOG_FOLDER
+from pycloud.session_manager import SESSION_DIR
 
 
 INSTALL_PATH = '/opt/year4000/'
-LOG_FOLDER = '/var/log/pycloud/'
 REQUIREMENTS = ('tmux', 'python3-redis')
 
 
@@ -34,12 +35,19 @@ def main():
         print(' - ', end='')
         install(need)
 
+    def make_dir(path):
+        """ Install dir path """
+        try:
+            os.makedirs(path)
+        except:
+            print('NOTICE: Install path ' + path + ' exists, skipping stage')
+        finally:
+            os.system("chmod 777 " + path)
+
     print('INFO: Creating install path directories')
-    try:
-        os.makedirs(INSTALL_PATH)
-        os.makedirs(LOG_FOLDER)
-    except:
-        print('NOTICE: Install path ' + INSTALL_PATH + ' exists, skipping stage')
+    make_dir(INSTALL_PATH)
+    make_dir(SESSION_DIR)
+    make_dir(LOG_FOLDER)
 
     print('INFO: Copying files to install path')
     try:

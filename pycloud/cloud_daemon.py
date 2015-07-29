@@ -28,7 +28,8 @@ from .session_manager import Session, Rank
 from .utils import generate_id
 
 
-FILE_LOG = "/var/log/pycloud/" + str(datetime.date.today()) + ".log"
+LOG_FOLDER = '/var/log/year4000/pycloud/'
+FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
 
 
 class Cloud:
