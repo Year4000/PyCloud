@@ -18,6 +18,7 @@
 
 from time import sleep
 from json import JSONDecoder
+import threading
 from .session_manager import Rank
 
 INPUT_CHANNEL = "year4000.pycloud.input"
@@ -78,7 +79,7 @@ class RankMessaging(Messaging):
 
     def send(self):
         """ Send the PyCloud score to the other instances """
-        while True:
+        while threading.current_thread().is_alive():
             # Remove outdated ranks
             self.cloud.remove_ranks()
 
