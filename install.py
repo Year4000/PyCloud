@@ -21,6 +21,7 @@ from pycloud.utils import copy
 
 
 INSTALL_PATH = '/opt/year4000/'
+LOG_FOLDER = '/var/log/pycloud/'
 REQUIREMENTS = ('tmux', 'python3-redis')
 
 
@@ -36,6 +37,7 @@ def main():
     print('INFO: Creating install path directories')
     try:
         os.makedirs(INSTALL_PATH)
+        os.makedirs(LOG_FOLDER)
     except:
         print('NOTICE: Install path ' + INSTALL_PATH + ' exists, skipping stage')
 

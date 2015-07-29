@@ -17,11 +17,17 @@
 """ The daemon process that manages the servers """
 
 import threading
+import logging
+import sys
+import datetime
 from time import time
 from redis import Redis
 from .redis_handler import InputMessaging, RankMessaging
 from .session_manager import Session, Rank
 from .utils import generate_id
+
+
+FILE_LOG = "/var/log/pycloud/" + str(datetime.date.today()) + ".log"
 
 
 class Cloud:
@@ -93,7 +99,11 @@ class Cloud:
 def main():
     """ Deploy all the needed threads """
     cloud = Cloud.get()
-    print("PyCloud ID: " + cloud.id)
+    log = logging.getLogger("pycloud")
+    log.setLevel(logging.INFO)
+    log.addHandler(logging.StreamHandler(stream=sys.stdout))
+    log.addHandler(logging.FileHandler(FILE_LOG))
+    log.info("PyCloud ID: " + cloud.id)
 
     redis = Redis()
     redis_input_messaging = InputMessaging(redis)
