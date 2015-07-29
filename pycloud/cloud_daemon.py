@@ -53,7 +53,7 @@ class Cloud:
 
     def remove_ranks(self):
         """ Get the ranks and sort them """
-        current_time = time()
+        current_time = time() - 1
         copy_ranks = self.__ranks.copy()
 
         for rank in copy_ranks:
