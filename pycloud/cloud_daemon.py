@@ -100,22 +100,28 @@ def main():
     redis_rank_messaging = RankMessaging(cloud, redis)
 
     # Start in put messaging channel
-    messaging = threading.Thread(target=redis_input_messaging.clock)
-    messaging.setDaemon(True)
-    messaging.start()
+    daemon_thread(redis_input_messaging.clock, "Input Channel")
 
     # Start to accept rank score
-    messaging = threading.Thread(target=redis_rank_messaging.clock)
-    messaging.setDaemon(True)
-    messaging.start()
+    daemon_thread(redis_rank_messaging.clock, "Rank Input")
 
     # Start the clock to send the rank score
-    messaging = threading.Thread(target=redis_rank_messaging.send)
-    messaging.setDaemon(True)
-    messaging.start()
+    daemon_thread(redis_rank_messaging.send, "Rank Output")
 
     # Keep the main thread running
     read_loop()
+
+
+def daemon_thread(target, name=None):
+    """ Create a daemon thread with specific target """
+    thread = threading.Thread(target=target)
+    thread.setDaemon(True)
+
+    if name is not None:
+        thread.setName("PyCloud " + name.title() + " Thread")
+
+    thread.start()
+    return thread
 
 
 def read_loop():
