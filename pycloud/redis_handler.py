@@ -16,7 +16,7 @@
 
 """ The redis handler that will handle the PubSub channel """
 
-from time import sleep, time
+from time import sleep
 from json import JSONDecoder
 from .session_manager import Rank
 
