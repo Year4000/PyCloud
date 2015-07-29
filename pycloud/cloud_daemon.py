@@ -30,11 +30,6 @@ from .utils import generate_id
 
 FILE_LOG = "/var/log/pycloud/" + str(datetime.date.today()) + ".log"
 
-_log = logging.getLogger("pycloud")
-_log.setLevel(logging.INFO)
-_log.addHandler(logging.StreamHandler(stream=sys.stdout))
-_log.addHandler(logging.FileHandler(FILE_LOG))
-
 
 class Cloud:
     """ The cloud instance that stores the sessions that are running """
@@ -149,4 +144,9 @@ def read_loop():
 
 
 if __name__ == '__main__':
+    _log = logging.getLogger("pycloud")
+    _log.setLevel(logging.INFO)
+    _log.addHandler(logging.StreamHandler(stream=sys.stdout))
+    _log.addHandler(logging.FileHandler(FILE_LOG))
+
     main()
