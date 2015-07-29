@@ -13,3 +13,7 @@ Run the python script `install.py`
 
 > python -m pycloud.cloud_daemon
 
+## Redis Channels
+
+**year4000.pycloud.rank** Used for internal tracking of servers
+**year4000.pycloud.input** Used to create or destroy a node, the payload is a JSON string
