@@ -19,6 +19,7 @@
 import threading
 import logging
 import sys
+import os
 import datetime
 from time import time
 from redis import Redis
@@ -39,6 +40,7 @@ class Cloud:
     """ The cloud instance that stores the sessions that are running """
 
     __inst = None
+    __group = os.getenv("PYCLOUD_GROUP", "pycloud")
 
     def __init__(self):
         Cloud.__inst = self
@@ -105,6 +107,7 @@ def main():
     """ Deploy all the needed threads """
     cloud = Cloud.get()
     _log.info("PyCloud ID: " + cloud.id)
+    _log.info("Group: " + Cloud._Cloud__group)
 
     redis = Redis()
     redis_input_messaging = InputMessaging(redis)
