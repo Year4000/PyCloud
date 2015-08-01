@@ -140,7 +140,7 @@ def read_loop():
     try:
         while True:
             input("")
-    except:
+    except KeyboardInterrupt:
         _log.info("\nEnding...")
 
 
