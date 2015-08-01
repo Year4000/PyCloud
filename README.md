@@ -11,7 +11,7 @@ Run the python script `install.py`
 
 ## Running
 
-> python -m pycloud.cloud_daemon
+> python3 -m pycloud.cloud_daemon
 
 ## Redis Channels
 

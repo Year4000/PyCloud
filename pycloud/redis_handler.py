@@ -42,7 +42,7 @@ class Messaging:
             if not data['type'] == 'message':
                 continue
 
-            self.process(data)
+            self.process(data['data'])
 
     def process(self, data):
         """ The method that will run for ever """
@@ -72,7 +72,7 @@ class RankMessaging(Messaging):
 
     def process(self, data):
         """ The thread that runs and process the data """
-        json = JSONDecoder().decode(data['data'])
+        json = JSONDecoder().decode(data.decode('utf-8'))
         rank = Rank(json['id'], json['score'], json['time'])
         self.cloud.add_rank(rank)
         print(self.cloud.get_ranks())
