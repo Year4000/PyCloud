@@ -91,10 +91,30 @@ class Session:
         # todo start the tmux session
         # todo start the script
         print("Start session: " + self.id)
+        Tmux(self.id).create('./pycloud.init')
 
 
 class Tmux:
     """ The wrapper to handle TMUX """
 
-    def __cmd(self, *command):
-        subprocess.call(command)
+    def __init__(self, name, session='PyCloud'):
+        self.session = session
+        self.name = check_not_none(name)
+
+    @staticmethod
+    def __cmd(command):
+        try:
+            args = ('tmux',) + tuple(command)
+            subprocess.call(args)
+        except:
+            _log.info('Could not process tmux cmd')
+            raise
+
+    def create(self, cmd=None):
+        """ Create a new tmux session """
+        args = ('new', '-s', self.name, '-n', self.session)
+
+        if cmd is not None:
+            args += ('-d', '"' + cmd + '"')
+
+        Tmux.__cmd(args)
