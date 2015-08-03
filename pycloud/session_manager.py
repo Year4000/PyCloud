@@ -22,6 +22,7 @@ from .utils import generate_id
 
 
 SESSION_DIR = '/var/run/year4000/pycloud/'
+DATA_DIR = '/var/lib/year4000/pycloud/'
 
 
 class Rank:
