@@ -15,9 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from pycloud.utils import install
-from pycloud.utils import is_root
-from pycloud.utils import copy
+from pycloud.utils import install, is_root, copy
 from pycloud.cloud_daemon import LOG_FOLDER
 from pycloud.session_manager import SESSION_DIR
 
