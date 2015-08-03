@@ -24,8 +24,8 @@ import datetime
 from time import time
 from redis import Redis
 from .redis_handler import InputMessaging, RankMessaging
-from .session_manager import Session, Rank
-from .utils import generate_id
+from .session_manager import Session, Rank, DATA_DIR
+from .utils import generate_id, remove
 
 
 LOG_FOLDER = '/var/log/year4000/pycloud/'
@@ -105,6 +105,11 @@ def main():
     cloud = Cloud.get()
     _log.info("PyCloud ID: " + cloud.id)
     _log.info("Group: " + Cloud._Cloud__group)
+
+    _log.info("Purging old sessions")
+    for folder in os.listdir(DATA_DIR):
+        remove(DATA_DIR + folder)
+        remove(parent=DATA_DIR, child=folder)
 
     redis = Redis()
     redis_input_messaging = InputMessaging(redis)
