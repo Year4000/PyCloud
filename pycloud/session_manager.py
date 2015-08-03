@@ -97,9 +97,9 @@ class Session:
 class Tmux:
     """ The wrapper to handle TMUX """
 
-    def __init__(self, name, session='PyCloud'):
-        self.session = session
-        self.name = check_not_none(name)
+    def __init__(self, session, name='PyCloud'):
+        self.session = check_not_none(session)
+        self.name = name
 
     @staticmethod
     def __cmd(command):
@@ -112,7 +112,7 @@ class Tmux:
 
     def create(self, cmd=None):
         """ Create a new tmux session """
-        args = ('new', '-s', self.name, '-n', self.session)
+        args = ('new', '-s', self.session, '-n', self.name)
 
         if cmd is not None:
             args += ('-d', '"' + cmd + '"')
