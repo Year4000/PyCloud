@@ -109,7 +109,6 @@ def main():
     _log.info("Purging old sessions")
     for folder in os.listdir(DATA_DIR):
         remove(DATA_DIR + folder)
-        remove(parent=DATA_DIR, child=folder)
 
     redis = Redis()
     redis_input_messaging = InputMessaging(redis)
