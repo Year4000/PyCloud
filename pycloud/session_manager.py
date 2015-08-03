@@ -77,7 +77,7 @@ class Session:
                 print(line, file=file)
 
         os.chdir(self.session_dir)
-        os.chmod(self.session_script, 777)
+        os.chmod(self.session_script, 0o777)
 
     def remove(self):
         """ Remove the session """
@@ -91,7 +91,7 @@ class Session:
         # todo start the tmux session
         # todo start the script
         print("Start session: " + self.id)
-        Tmux(self.id).create('./pycloud.init')
+        Tmux(self.id).create(self.session_script)
 
 
 class Tmux:
@@ -115,6 +115,6 @@ class Tmux:
         args = ('new', '-s', self.session, '-n', self.name)
 
         if cmd is not None:
-            args += ('-d', '"' + cmd + '"')
+            args += ('-d', cmd)
 
         Tmux.__cmd(args)
