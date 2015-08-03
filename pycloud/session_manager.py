@@ -17,10 +17,13 @@
 """ Wrapper to create tmux sessions """
 
 import subprocess
+import os
+import logging
 from json import JSONEncoder
-from .utils import generate_id
+from .utils import check_not_none, generate_id
 
 
+_log = logging.getLogger("pycloud")
 SESSION_DIR = '/var/run/year4000/pycloud/'
 DATA_DIR = '/var/lib/year4000/pycloud/'
 
@@ -51,15 +54,29 @@ class Rank:
 class Session:
     """ The session object that represents the session """
 
-    def __init__(self, cloud):
+    def __init__(self, cloud, script):
         """ Generate this session with the cloud instance """
         self.id = generate_id()
-        self.cloud = cloud
+        self.cloud = check_not_none(cloud)
+        self.script = check_not_none(script)
+        self.session_dir = DATA_DIR + self.id + "/"
+        self.session_script = self.session_dir + "pycloud.init"
 
     def create(self):
         """ Create the session """
-        # todo create the session environment
         print("Create session: " + self.id)
+
+        try:
+            os.makedirs(self.session_dir)
+        except OSError:
+            _log.error("Fail to create directory for: " + str(self))
+            raise
+
+        with open(self.session_script, 'w') as file:
+            for line in self.script.split('\n'):
+                print(line, file=file)
+
+        os.chmod(self.session_script, 777)
 
     def remove(self):
         """ Remove the session """
@@ -67,7 +84,7 @@ class Session:
         # todo remove the session files
         print("Remove session: " + self.id)
 
-    def start(self, script):
+    def start(self):
         """ Start the session """
         # todo write the script to the session
         # todo start the tmux session
