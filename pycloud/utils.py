@@ -42,6 +42,19 @@ def is_root():
     return os.getuid() == 0
 
 
+def remove(path=None, parent=None, child=None):
+    """ Remove a folder and all its contents """
+    if path is not None and os.path.isdir(path):
+        for content in os.listdir(path):
+            remove(path + "/" + content, parent=path, child=content)
+    elif parent is not None and child is not None:
+        os.chdir(parent)
+        if os.path.isdir(child):
+            os.rmdir(child)
+        else:
+            os.remove(child)
+
+
 def copy(in_path, out_path):
     """ Copy a directory or file to path """
     if os.path.isdir(in_path):
