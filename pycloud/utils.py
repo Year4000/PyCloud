@@ -70,3 +70,11 @@ def generate_id():
     process_id = os.getpid()
 
     return hex(random_number + process_id + system_time)[2:]
+
+
+def check_not_none(var):
+    """ Check that the var is not none """
+    if var is None:
+        raise ValueError("Var is None")
+
+    return var
