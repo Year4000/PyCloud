@@ -76,6 +76,7 @@ class Session:
             for line in self.script.split('\n'):
                 print(line, file=file)
 
+        os.chdir(self.session_dir)
         os.chmod(self.session_script, 777)
 
     def remove(self):
