@@ -127,7 +127,7 @@ def main():
         remove(DATA_DIR + folder)
 
     redis = Redis()
-    redis_input_messaging = InputMessaging(redis)
+    redis_input_messaging = InputMessaging(cloud, redis)
     redis_rank_messaging = RankMessaging(cloud, redis)
 
     # Start in put messaging channel

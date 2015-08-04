@@ -19,9 +19,12 @@
 from time import sleep
 from json import JSONDecoder
 import threading
+import logging
 from .session_manager import Rank
+from .utils import check_not_none
 
-INPUT_CHANNEL = "year4000.pycloud.input"
+_log = logging.getLogger('pycloud')
+INPUT_CHANNEL = "year4000.pycloud.create"
 RANK_CHANNEL = "year4000.pycloud.rank"
 
 
@@ -52,14 +55,24 @@ class Messaging:
 class InputMessaging(Messaging):
     """ Listen to the INPUT_CHANNEL and process the node """
 
-    def __init__(self, redis):
+    def __init__(self, cloud, redis):
         """ Create the instances with redis """
         Messaging.__init__(self, redis, INPUT_CHANNEL)
+        self.cloud = cloud
 
     def process(self, data):
         """ The thread that runs and process the data """
-        # todo process the data for tmux
-        print("INPUT: " + str(data))
+        json = JSONDecoder().decode(data.decode('utf-8'))
+
+        try:
+            hash_id = check_not_none(json['id'])
+            script = check_not_none(json['script'])
+
+            session = self.cloud.create_session(script)
+            results = {'id': session.id}
+            self.redis.publish(INPUT_CHANNEL + '.' + hash_id, str(results))
+        except ValueError as error:
+            _log.info('Input error: ' + str(error))
 
 
 class RankMessaging(Messaging):
