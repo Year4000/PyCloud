@@ -48,20 +48,20 @@ class Messaging:
             self.process(data['data'])
 
     def process(self, data):
-        """ The method that will run for ever """
+        """ The method that will be called when processing the data """
         raise NotImplementedError()
 
 
 class CreateMessaging(Messaging):
-    """ Listen to the CREATE_CHANNEL and process the node """
+    """ Listen to the CREATE_CHANNEL and create the session """
 
     def __init__(self, cloud, redis):
-        """ Create the instances with redis """
+        """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, CREATE_CHANNEL)
         self.cloud = cloud
 
     def process(self, data):
-        """ The thread that runs and process the data """
+        """ The thread that runs and create the session based on the data """
         json = JSONDecoder().decode(data.decode('utf-8'))
 
         try:
@@ -76,22 +76,22 @@ class CreateMessaging(Messaging):
 
 
 class RankMessaging(Messaging):
-    """ Listen to the INPUT_CHANNEL and process the node """
+    """ Listen to the RANK_CHANNEL and process the node """
 
     def __init__(self, cloud, redis):
-        """ Create the instances with redis """
+        """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, RANK_CHANNEL)
         self.cloud = cloud
 
     def process(self, data):
-        """ The thread that runs and process the data """
+        """ The thread that runs and process the rank score """
         json = JSONDecoder().decode(data.decode('utf-8'))
         rank = Rank(json['id'], json['score'], json['time'])
         self.cloud.add_rank(rank)
         print(self.cloud.get_ranks())
 
     def send(self):
-        """ Send the PyCloud score to the other instances """
+        """ Send the score to the other instances """
         while threading.current_thread().is_alive():
             # Remove outdated ranks
             self.cloud.remove_ranks()
