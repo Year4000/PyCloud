@@ -55,11 +55,11 @@ class Cloud:
 
     def create_session(self, script):
         """ Create a new session from the json input """
-        # todo add args to method
         session = Session(self, script)
         self.sessions.append(session)
         session.create()
         session.start()
+        return session
 
     def remove_ranks(self):
         """ Get the ranks and sort them """
