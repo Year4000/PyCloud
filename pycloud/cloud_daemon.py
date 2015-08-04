@@ -162,13 +162,18 @@ def read_loop():
         while True:
             input("")
     except KeyboardInterrupt:
-        _log.info("\nEnding...")
+        _log.info("Ending...")
 
 
 if __name__ == '__main__':
     _log = logging.getLogger("pycloud")
     _log.setLevel(logging.INFO)
-    _log.addHandler(logging.StreamHandler(stream=sys.stdout))
-    _log.addHandler(logging.FileHandler(FILE_LOG))
+    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
+    stream_handler = logging.StreamHandler(stream=sys.stdout)
+    stream_handler.setFormatter(formatter)
+    file_handler = logging.FileHandler(FILE_LOG)
+    file_handler.setFormatter(formatter)
+    _log.addHandler(stream_handler)
+    _log.addHandler(file_handler)
 
     main()
