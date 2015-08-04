@@ -88,7 +88,7 @@ class RankMessaging(Messaging):
         json = JSONDecoder().decode(data.decode('utf-8'))
         rank = Rank(json['id'], json['score'], json['time'])
         self.cloud.add_rank(rank)
-        print(self.cloud.get_ranks())
+        _log.debug('Cloud Nodes: ' + str(self.cloud.get_ranks()))
 
     def send(self):
         """ Send the score to the other instances """
