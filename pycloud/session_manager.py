@@ -118,3 +118,8 @@ class Tmux:
             args += ('-d', cmd)
 
         Tmux.__cmd(args)
+
+    def remove(self):
+        """ Remove tmux session """
+        args = ('kill-session', '-t', self.session)
+        Tmux.__cmd(args)
