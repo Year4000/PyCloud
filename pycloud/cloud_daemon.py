@@ -23,7 +23,7 @@ import os
 import datetime
 from time import time
 from redis import Redis
-from .redis_handler import CreateMessaging, RankMessaging
+from .redis_handler import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .session_manager import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none
 
@@ -60,6 +60,17 @@ class Cloud:
         session.create()
         session.start()
         return session
+
+    def is_session(self, hash_id):
+        """ Does a session exists sessions """
+        session = None
+        check_not_none(hash_id)
+
+        for node in self.sessions:
+            if node.id == hash_id:
+                session = node
+
+        return session is None
 
     def remove_session(self, hash_id):
         """ Remove a session from sessions """
@@ -127,11 +138,15 @@ def main():
         remove(DATA_DIR + folder)
 
     redis = Redis()
-    redis_input_messaging = CreateMessaging(cloud, redis)
+    redis_create_messaging = CreateMessaging(cloud, redis)
+    redis_status_messaging = StatusMessaging(cloud, redis)
+    redis_remove_messaging = RemoveMessaging(cloud, redis)
     redis_rank_messaging = RankMessaging(cloud, redis)
 
-    # Start in put messaging channel
-    daemon_thread(redis_input_messaging.clock, "Input Channel")
+    # Start the messaging channel to handle sessions
+    daemon_thread(redis_create_messaging.clock, "Create Channel")
+    daemon_thread(redis_status_messaging.clock, "Status Channel")
+    daemon_thread(redis_remove_messaging.clock, "Remove Channel")
 
     # Start to accept rank score
     daemon_thread(redis_rank_messaging.clock, "Rank Input")

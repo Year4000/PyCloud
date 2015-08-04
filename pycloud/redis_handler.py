@@ -25,6 +25,8 @@ from .utils import check_not_none
 
 _log = logging.getLogger('pycloud')
 CREATE_CHANNEL = "year4000.pycloud.create"
+STATUS_CHANNEL = "year4000.pycloud.status"
+REMOVE_CHANNEL = "year4000.pycloud.remove"
 RANK_CHANNEL = "year4000.pycloud.rank"
 
 
@@ -73,6 +75,54 @@ class CreateMessaging(Messaging):
             self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Input error: ' + str(error))
+
+
+class RemoveMessaging(Messaging):
+    """ Listen to the REMOVE_CHANNEL and remove the session """
+
+    def __init__(self, cloud, redis):
+        """ Create the instances with redis and cloud """
+        Messaging.__init__(self, redis, REMOVE_CHANNEL)
+        self.cloud = cloud
+
+    def process(self, data):
+        """ The thread that runs and remove the session """
+        json = JSONDecoder().decode(data.decode('utf-8'))
+
+        try:
+            hash_id = check_not_none(json['id'])
+            session = check_not_none(json['session'])
+            status = self.cloud.is_session(session)
+
+            if status:
+                self.cloud.remove_session(session)
+
+            results = {'session': session, 'status': status}
+            self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
+        except ValueError as error:
+            _log.info('Remove error: ' + str(error))
+
+
+class StatusMessaging(Messaging):
+    """ Listen to the STATUS_CHANNEL and status the session """
+
+    def __init__(self, cloud, redis):
+        """ Create the instances with redis and cloud """
+        Messaging.__init__(self, redis, CREATE_CHANNEL)
+        self.cloud = cloud
+
+    def process(self, data):
+        """ The thread that runs and gets the status of the session """
+        json = JSONDecoder().decode(data.decode('utf-8'))
+
+        try:
+            hash_id = check_not_none(json['id'])
+            session = check_not_none(json['session'])
+
+            results = {'id': session, 'status': self.cloud.is_session(session)}
+            self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
+        except ValueError as error:
+            _log.info('Status error: ' + str(error))
 
 
 class RankMessaging(Messaging):
