@@ -23,7 +23,7 @@ import os
 import datetime
 from time import time
 from redis import Redis
-from .redis_handler import InputMessaging, RankMessaging
+from .redis_handler import CreateMessaging, RankMessaging
 from .session_manager import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none
 
@@ -127,7 +127,7 @@ def main():
         remove(DATA_DIR + folder)
 
     redis = Redis()
-    redis_input_messaging = InputMessaging(cloud, redis)
+    redis_input_messaging = CreateMessaging(cloud, redis)
     redis_rank_messaging = RankMessaging(cloud, redis)
 
     # Start in put messaging channel

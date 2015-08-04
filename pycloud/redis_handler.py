@@ -24,7 +24,7 @@ from .session_manager import Rank
 from .utils import check_not_none
 
 _log = logging.getLogger('pycloud')
-INPUT_CHANNEL = "year4000.pycloud.create"
+CREATE_CHANNEL = "year4000.pycloud.create"
 RANK_CHANNEL = "year4000.pycloud.rank"
 
 
@@ -52,12 +52,12 @@ class Messaging:
         raise NotImplementedError()
 
 
-class InputMessaging(Messaging):
-    """ Listen to the INPUT_CHANNEL and process the node """
+class CreateMessaging(Messaging):
+    """ Listen to the CREATE_CHANNEL and process the node """
 
     def __init__(self, cloud, redis):
         """ Create the instances with redis """
-        Messaging.__init__(self, redis, INPUT_CHANNEL)
+        Messaging.__init__(self, redis, CREATE_CHANNEL)
         self.cloud = cloud
 
     def process(self, data):
@@ -70,7 +70,7 @@ class InputMessaging(Messaging):
 
             session = self.cloud.create_session(script)
             results = {'id': session.id}
-            self.redis.publish(INPUT_CHANNEL + '.' + hash_id, str(results))
+            self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Input error: ' + str(error))
 
