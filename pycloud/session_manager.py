@@ -20,7 +20,7 @@ import subprocess
 import os
 import logging
 from json import JSONEncoder
-from .utils import check_not_none, generate_id
+from .utils import check_not_none, generate_id, remove
 
 
 _log = logging.getLogger("pycloud")
@@ -64,7 +64,7 @@ class Session:
 
     def create(self):
         """ Create the session """
-        print("Create session: " + self.id)
+        _log.info("Create session: " + self.id)
 
         try:
             os.makedirs(self.session_dir)
@@ -81,16 +81,13 @@ class Session:
 
     def remove(self):
         """ Remove the session """
-        # todo stop the session
-        # todo remove the session files
-        print("Remove session: " + self.id)
+        _log.info("Remove session: " + self.id)
+        Tmux(self.id).remove()
+        remove(self.session_dir)
 
     def start(self):
         """ Start the session """
-        # todo write the script to the session
-        # todo start the tmux session
-        # todo start the script
-        print("Start session: " + self.id)
+        _log.info("Start session: " + self.id)
         Tmux(self.id).create(self.session_script)
 
 

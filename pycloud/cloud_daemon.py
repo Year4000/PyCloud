@@ -25,7 +25,7 @@ from time import time
 from redis import Redis
 from .redis_handler import InputMessaging, RankMessaging
 from .session_manager import Session, Rank, DATA_DIR
-from .utils import generate_id, remove
+from .utils import generate_id, remove, check_not_none
 
 
 LOG_FOLDER = '/var/log/year4000/pycloud/'
@@ -59,6 +59,22 @@ class Cloud:
         self.sessions.append(session)
         session.create()
         session.start()
+        return session
+
+    def remove_session(self, hash_id):
+        """ Remove a session from sessions """
+        session = None
+        check_not_none(hash_id)
+
+        for node in self.sessions:
+            if node.id == hash_id:
+                session = node
+
+        if session is None:
+            raise Exception('Session not found')
+
+        self.sessions.remove(session)
+        session.remove()
         return session
 
     def remove_ranks(self):
