@@ -121,6 +121,12 @@ class Cloud:
             self.__ranks.remove(rank)
             self.__ranks.add(rank)
 
+    def is_server(self):
+        """ Check if this session is this session """
+        ranks = self.get_ranks()
+
+        return ranks[len(ranks) - 1].id == self.id
+
     def generate_rank(self):
         """ Generate a rank object to send through redis """
         score = len(self.sessions)

@@ -70,9 +70,10 @@ class CreateMessaging(Messaging):
             hash_id = check_not_none(json['id'])
             script = check_not_none(json['script'])
 
-            session = self.cloud.create_session(script)
-            results = {'id': session.id}
-            self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
+            if self.cloud.is_server():
+                session = self.cloud.create_session(script)
+                results = {'id': session.id}
+                self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Input error: ' + str(error))
 
