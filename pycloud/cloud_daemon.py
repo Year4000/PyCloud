@@ -26,7 +26,7 @@ from time import time
 from redis import Redis
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .managers import Session, Rank, DATA_DIR
-from .utils import generate_id, remove, check_not_none
+from .utils import generate_id, remove, check_not_none, default_val
 
 
 CONFIG_PATH = '/etc/year4000/pycloud/'
@@ -146,8 +146,8 @@ def main():
     _log.info("Importing settings")
     with open(CONFIG_FILE, 'r') as config:
         settings = yaml.load(config)
-        host = settings['redis']['host']
-        port = settings['redis']['port']
+        host = default_val(settings['redis']['host'], 'localhost')
+        port = default_val(settings['redis']['port'], 6379)
 
         # Only update region if not pycloud
         if group != settings['region']:

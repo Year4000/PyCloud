@@ -70,3 +70,11 @@ def check_not_none(var, message='Var is None'):
         raise ValueError(message)
 
     return var
+
+
+def default_val(var, default):
+    """ If var is None assign default value """
+    if var is None:
+        var = default
+
+    return var
