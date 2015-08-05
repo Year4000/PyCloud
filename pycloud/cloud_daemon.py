@@ -21,6 +21,7 @@ import logging
 import sys
 import os
 import datetime
+import yaml
 from time import time
 from redis import Redis
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
@@ -28,6 +29,8 @@ from .managers import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none
 
 
+CONFIG_PATH = '/etc/year4000/pycloud/'
+CONFIG_FILE = CONFIG_PATH + 'settings.yml'
 LOG_FOLDER = '/var/log/year4000/pycloud/'
 FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
 
@@ -136,14 +139,26 @@ class Cloud:
 def main():
     """ Deploy all the needed threads """
     cloud = Cloud.get()
+    group = Cloud._Cloud__group
     _log.info("PyCloud ID: " + cloud.id)
-    _log.info("Group: " + Cloud._Cloud__group)
+    _log.info("Group: " + group)
+
+    _log.info("Importing settings")
+    with open(CONFIG_FILE, 'r') as config:
+        settings = yaml.load(config)
+        host = settings['redis']['host']
+        port = settings['redis']['port']
+
+        # Only update region if not pycloud
+        if group != settings['region']:
+            group = settings['region']
+            _log.info("Group: " + group)
 
     _log.info("Purging old sessions")
     for folder in os.listdir(DATA_DIR):
         remove(DATA_DIR + folder)
 
-    redis = Redis()
+    redis = Redis.from_url(host + ":" + str(port))
     redis_create_messaging = CreateMessaging(cloud, redis)
     redis_status_messaging = StatusMessaging(cloud, redis)
     redis_remove_messaging = RemoveMessaging(cloud, redis)

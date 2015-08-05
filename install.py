@@ -16,12 +16,12 @@
 
 import os
 from pycloud.utils import install, is_root, copy
-from pycloud.cloud_daemon import LOG_FOLDER
+from pycloud.cloud_daemon import LOG_FOLDER, CONFIG_PATH, CONFIG_FILE
 from pycloud.managers import SESSION_DIR, DATA_DIR
 
 
 INSTALL_PATH = '/opt/year4000/'
-REQUIREMENTS = ('tmux', 'python3-redis')
+REQUIREMENTS = ('tmux', 'python3-redis', 'python3-yaml')
 
 
 def main():
@@ -47,9 +47,11 @@ def main():
     make_dir(SESSION_DIR)
     make_dir(DATA_DIR)
     make_dir(LOG_FOLDER)
+    make_dir(CONFIG_PATH)
 
     print('INFO: Copying files to install path')
     try:
+        copy('settings.yml', CONFIG_FILE)
         copy('pycloud', INSTALL_PATH + 'pycloud')
     except:
         print('ERROR: PyCloud is already installed, remove ' + INSTALL_PATH + 'pycloud')

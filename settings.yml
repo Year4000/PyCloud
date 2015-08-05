@@ -1,0 +1,9 @@
+# PyCloud Settings
+
+# The region this node is opperating on
+region: "pycloud"
+
+# The redis connection host and port
+redis:
+  host: "localhost"
+  port: 6379
