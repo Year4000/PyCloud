@@ -17,7 +17,7 @@
 import os
 from pycloud.utils import install, is_root, copy
 from pycloud.cloud_daemon import LOG_FOLDER
-from pycloud.session_manager import SESSION_DIR, DATA_DIR
+from pycloud.managers import SESSION_DIR, DATA_DIR
 
 
 INSTALL_PATH = '/opt/year4000/'

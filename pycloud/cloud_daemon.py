@@ -23,8 +23,8 @@ import os
 import datetime
 from time import time
 from redis import Redis
-from .redis_handler import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
-from .session_manager import Session, Rank, DATA_DIR
+from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
+from .managers import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none
 
 
