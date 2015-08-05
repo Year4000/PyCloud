@@ -73,7 +73,7 @@ class Cloud:
             if node.id == hash_id:
                 session = node
 
-        return session is None
+        return session is not None
 
     def remove_session(self, hash_id):
         """ Remove a session from sessions """
