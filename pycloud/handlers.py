@@ -109,7 +109,7 @@ class StatusMessaging(Messaging):
 
     def __init__(self, cloud, redis):
         """ Create the instances with redis and cloud """
-        Messaging.__init__(self, redis, CREATE_CHANNEL)
+        Messaging.__init__(self, redis, STATUS_CHANNEL)
         self.cloud = cloud
 
     def process(self, data):
