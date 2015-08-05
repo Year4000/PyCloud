@@ -15,7 +15,7 @@ Run the python script `install.py`
 
 ## Redis Channels
 
-**year4000.pycloud.rank** Used for internal tracking of servers
-**year4000.pycloud.create** Used to create a node, the payload is a JSON string
-**year4000.pycloud.status** Used to get the status a node, the payload is a JSON string
-**year4000.pycloud.remove** Used to remove a node, the payload is a JSON string
+- **year4000.pycloud.rank** Used for internal tracking of servers
+- **year4000.pycloud.create** Used to create a node, the payload is a JSON string
+- **year4000.pycloud.status** Used to get the status a node, the payload is a JSON string
+- **year4000.pycloud.remove** Used to remove a node, the payload is a JSON string
