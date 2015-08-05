@@ -150,7 +150,7 @@ def main():
         port = default_val(settings['redis']['port'], 6379)
 
         # Only update region if not pycloud
-        if group != settings['region']:
+        if settings['region'] is not None and group != settings['region']:
             group = settings['region']
             _log.info("Group: " + group)
 
