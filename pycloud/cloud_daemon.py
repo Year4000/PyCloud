@@ -158,7 +158,7 @@ def main():
     for folder in os.listdir(DATA_DIR):
         remove(DATA_DIR + folder)
 
-    redis = Redis.from_url(host + ":" + str(port))
+    redis = Redis(host, port)
     redis_create_messaging = CreateMessaging(cloud, redis)
     redis_status_messaging = StatusMessaging(cloud, redis)
     redis_remove_messaging = RemoveMessaging(cloud, redis)
