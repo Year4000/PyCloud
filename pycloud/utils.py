@@ -64,9 +64,9 @@ def generate_id():
     return hex(random_number + process_id + system_time)[2:]
 
 
-def check_not_none(var):
+def check_not_none(var, message='Var is None'):
     """ Check that the var is not none """
     if var is None:
-        raise ValueError("Var is None")
+        raise ValueError(message)
 
     return var
