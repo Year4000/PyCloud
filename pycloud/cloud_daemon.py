@@ -133,7 +133,12 @@ class Cloud:
     def generate_rank(self):
         """ Generate a rank object to send through redis """
         score = len(self.sessions)
-        return Rank(self.id, score, time())
+        sessions = []
+
+        for session in self.sessions:
+            sessions.append(session.id)
+
+        return Rank(self.id, score, time(), sessions)
 
 
 def main():

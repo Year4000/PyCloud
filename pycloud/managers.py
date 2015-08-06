@@ -31,10 +31,11 @@ DATA_DIR = '/var/lib/year4000/pycloud/'
 class Rank:
     """ The object that represents the rank of each object """
 
-    def __init__(self, id, score, time):
+    def __init__(self, id, score, time, sessions):
         self.id = id
         self.score = int(score)
         self.time = time
+        self.sessions = sessions
 
     __lt__ = lambda self, other: self.score < other.score
     __le__ = lambda self, other: self.score <= other.score
@@ -45,7 +46,12 @@ class Rank:
     __hash__ = lambda self: int(self.id, 16)
 
     def __str__(self):
-        return JSONEncoder().encode({'id': self.id, 'score': self.score, 'time': self.time})
+        return JSONEncoder().encode({
+            'id': self.id,
+            'score': self.score,
+            'time': self.time,
+            'sessions': self.sessions
+        })
 
     def __repr__(self):
         return "Rank" + self.__str__()

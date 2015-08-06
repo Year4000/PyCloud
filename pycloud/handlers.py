@@ -137,7 +137,7 @@ class RankMessaging(Messaging):
     def process(self, data):
         """ The thread that runs and process the rank score """
         json = JSONDecoder().decode(data.decode('utf-8'))
-        rank = Rank(json['id'], json['score'], json['time'])
+        rank = Rank(json['id'], json['score'], json['time'], json['sessions'])
         self.cloud.add_rank(rank)
         _log.debug('Cloud Nodes: ' + str(self.cloud.get_ranks()))
 
