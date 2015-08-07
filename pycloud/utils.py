@@ -44,7 +44,14 @@ def is_root():
 
 def remove(path):
     """ Remove a folder and all its contents """
-    shutil.rmtree(check_not_none(path))
+    max_checks = 10
+    checks = 0
+
+    while os.path.exists(path):
+        if checks > max_checks:
+            break
+
+        shutil.rmtree(check_not_none(path))
 
 
 def copy(in_path, out_path):
