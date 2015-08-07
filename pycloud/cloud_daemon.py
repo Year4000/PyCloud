@@ -45,7 +45,7 @@ class Cloud:
         Cloud.__inst = self
         self.id = generate_id()
         self.sessions = []
-        self.session_counter = 9998
+        self.session_counter = 0
         self.ports = range(50000, 60001)
         self.settings = None
         self.__ranks = set()
