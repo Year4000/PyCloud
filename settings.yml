@@ -3,6 +3,9 @@
 # The region this node is opperating on
 region: "pycloud"
 
+# The address to use in pycloud.json, blank for system default
+hostname:
+
 # The redis connection host and port
 redis:
   host: "localhost"

@@ -45,6 +45,8 @@ class Cloud:
         Cloud.__inst = self
         self.id = generate_id()
         self.sessions = []
+        self.session_counter = 9998
+        self.ports = range(50000, 60001)
         self.settings = None
         self.__ranks = set()
         self.__ranks.add(self.generate_rank())
@@ -63,6 +65,7 @@ class Cloud:
         self.sessions.append(session)
         session.create()
         session.start()
+        self.session_counter += 1
         return session
 
     def is_session(self, hash_id):

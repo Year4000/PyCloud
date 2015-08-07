@@ -19,8 +19,9 @@
 import subprocess
 import os
 import logging
+import socket
 from json import JSONEncoder
-from .utils import check_not_none, generate_id, remove
+from .utils import check_not_none, generate_id, remove, default_val
 
 
 _log = logging.getLogger("pycloud")
@@ -65,8 +66,11 @@ class Session:
         self.id = generate_id()
         self.cloud = check_not_none(cloud)
         self.script = check_not_none(script)
+        port_pos = cloud.session_counter % 10000 if cloud.session_counter > 10000 else cloud.session_counter
+        self.port = cloud.ports[int(port_pos)]
         self.session_dir = DATA_DIR + self.id + "/"
         self.session_script = self.session_dir + "pycloud.init"
+        self.session_config = self.session_dir + "pycloud.json"
 
     def create(self):
         """ Create the session """
@@ -94,6 +98,15 @@ class Session:
     def start(self):
         """ Start the session """
         _log.info("Start session: " + self.id)
+
+        with open(self.session_config, 'w') as file:
+            pretty = JSONEncoder(indent=4, separators=[',', ': ']).encode({
+                'hostname': default_val(self.cloud.settings['hostname'], socket.gethostname()),
+                'port': self.port,
+                'sessions': len(self.cloud.sessions),
+            })
+            print(pretty, file=file)
+
         Tmux(self.id).create(self.session_script)
 
 
