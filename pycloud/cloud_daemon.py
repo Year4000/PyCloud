@@ -45,6 +45,7 @@ class Cloud:
         Cloud.__inst = self
         self.id = generate_id()
         self.sessions = []
+        self.settings = None
         self.__ranks = set()
         self.__ranks.add(self.generate_rank())
 
@@ -150,13 +151,13 @@ def main():
 
     _log.info("Importing settings")
     with open(CONFIG_FILE, 'r') as config:
-        settings = yaml.load(config)
-        host = default_val(settings['redis']['host'], 'localhost')
-        port = default_val(settings['redis']['port'], 6379)
+        cloud.settings = yaml.load(config)
+        host = default_val(cloud.settings['redis']['host'], 'localhost')
+        port = default_val(cloud.settings['redis']['port'], 6379)
 
         # Only update region if not pycloud
-        if settings['region'] is not None and group != settings['region']:
-            group = settings['region']
+        if cloud.settings['region'] is not None and group != cloud.settings['region']:
+            group = cloud.settings['region']
             _log.info("Group: " + group)
 
     _log.info("Purging old sessions")
