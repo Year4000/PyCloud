@@ -51,7 +51,7 @@ class Rank:
             'id': self.id,
             'score': self.score,
             'time': self.time,
-            'sessions': self.sessions
+            'sessions': self.sessions,
         })
 
     def __repr__(self):
