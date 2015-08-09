@@ -203,7 +203,7 @@ def daemon_thread(target, name=None):
 
 
 def read_loop():
-    """ An infinant loop """
+    """ An infinite loop """
 
     try:
         while True:
