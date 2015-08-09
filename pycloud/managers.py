@@ -24,7 +24,7 @@ from json import JSONEncoder
 from .utils import check_not_none, generate_id, remove, default_val
 
 
-_log = logging.getLogger("pycloud")
+_log = logging.getLogger('pycloud')
 SESSION_DIR = '/var/run/year4000/pycloud/'
 DATA_DIR = '/var/lib/year4000/pycloud/'
 
@@ -55,7 +55,7 @@ class Rank:
         })
 
     def __repr__(self):
-        return "Rank" + self.__str__()
+        return 'Rank' + self.__str__()
 
 
 class Session:
@@ -68,18 +68,18 @@ class Session:
         self.script = check_not_none(script)
         port_pos = cloud.session_counter % 10000 if cloud.session_counter > 10000 else cloud.session_counter
         self.port = cloud.ports[int(port_pos)]
-        self.session_dir = DATA_DIR + self.id + "/"
-        self.session_script = self.session_dir + "pycloud.init"
-        self.session_config = self.session_dir + "pycloud.json"
+        self.session_dir = DATA_DIR + self.id + '/'
+        self.session_script = self.session_dir + 'pycloud.init'
+        self.session_config = self.session_dir + 'pycloud.json'
 
     def create(self):
         """ Create the session """
-        _log.info("Create session: " + self.id)
+        _log.info('Create session: ' + self.id)
 
         try:
             os.makedirs(self.session_dir)
         except OSError:
-            _log.error("Fail to create directory for: " + str(self))
+            _log.error('Fail to create directory for: ' + str(self))
             raise
 
         with open(self.session_script, 'w') as file:
@@ -91,13 +91,13 @@ class Session:
 
     def remove(self):
         """ Remove the session """
-        _log.info("Remove session: " + self.id)
+        _log.info('Remove session: ' + self.id)
         Tmux(self.id).remove()
         remove(self.session_dir)
 
     def start(self):
         """ Start the session """
-        _log.info("Start session: " + self.id)
+        _log.info('Start session: ' + self.id)
 
         with open(self.session_config, 'w') as file:
             pretty = JSONEncoder(indent=4, separators=[',', ': ']).encode({

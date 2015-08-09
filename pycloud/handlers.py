@@ -24,10 +24,10 @@ from .managers import Rank
 from .utils import check_not_none
 
 _log = logging.getLogger('pycloud')
-CREATE_CHANNEL = "year4000.pycloud.create"
-STATUS_CHANNEL = "year4000.pycloud.status"
-REMOVE_CHANNEL = "year4000.pycloud.remove"
-RANK_CHANNEL = "year4000.pycloud.rank"
+CREATE_CHANNEL = 'year4000.pycloud.create'
+STATUS_CHANNEL = 'year4000.pycloud.status'
+REMOVE_CHANNEL = 'year4000.pycloud.remove'
+RANK_CHANNEL = 'year4000.pycloud.rank'
 
 
 class Messaging:
