@@ -208,6 +208,9 @@ def read_loop():
     except KeyboardInterrupt:
         _log.info('Ending...')
 
+        for session in Cloud.get().sessions:
+            session.remove()
+
 
 if __name__ == '__main__':
     _log = logging.getLogger('pycloud')
