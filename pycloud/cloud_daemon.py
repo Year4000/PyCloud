@@ -186,9 +186,6 @@ def main():
     # Start the clock to send the rank score
     daemon_thread(redis_rank_messaging.send, 'Rank Output')
 
-    # Keep the main thread running
-    read_loop()
-
 
 def daemon_thread(target, name=None):
     """ Create a daemon thread with specific target """
@@ -224,3 +221,4 @@ if __name__ == '__main__':
     _log.addHandler(file_handler)
 
     main()
+    read_loop()
