@@ -21,12 +21,21 @@ import logging
 import sys
 import os
 import datetime
-import yaml
 from time import time
-from redis import Redis
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .managers import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none, default_val
+
+try:
+    from redis import Redis
+    import yaml
+except ImportError:
+    Redis = None
+    yaml = None
+
+    if __name__ == "__main__":
+        print('Fail to import, make sure to run ./install.py first')
+        sys.exit(1)
 
 
 CONFIG_PATH = '/etc/year4000/pycloud/'
