@@ -16,11 +16,6 @@
 
 """ The daemon process that manages the servers """
 
-CONFIG_PATH = '/etc/year4000/pycloud/'
-CONFIG_FILE = CONFIG_PATH + 'settings.yml'
-LOG_FOLDER = '/var/log/year4000/pycloud/'
-
-
 import threading
 import logging
 import sys
@@ -34,6 +29,9 @@ from .managers import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none, default_val
 
 
+CONFIG_PATH = '/etc/year4000/pycloud/'
+CONFIG_FILE = CONFIG_PATH + 'settings.yml'
+LOG_FOLDER = '/var/log/year4000/pycloud/'
 FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
 
 
