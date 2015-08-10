@@ -21,17 +21,19 @@ import logging
 import sys
 import os
 import datetime
-from time import time
+from time import time, sleep
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .managers import Session, Rank, DATA_DIR
 from .utils import generate_id, remove, check_not_none, default_val
 
 try:
     from redis import Redis
+    from redis.exceptions import ConnectionError
     import yaml
 except ImportError:
     Redis = None
     yaml = None
+    ConnectionError = None
 
     if __name__ == "__main__":
         print('Fail to import, make sure to run ./install.py first')
@@ -181,6 +183,15 @@ def main():
     redis_status_messaging = StatusMessaging(cloud, redis)
     redis_remove_messaging = RemoveMessaging(cloud, redis)
     redis_rank_messaging = RankMessaging(cloud, redis)
+
+    # Make sure the connection to redis exists
+    while True:
+        try:
+            redis.ping()
+            break
+        except ConnectionError:
+            _log.error('Trying to connect to redis again')
+            sleep(1)
 
     # Start the messaging channel to handle sessions
     daemon_thread(redis_create_messaging.clock, 'Create Channel')
