@@ -153,4 +153,4 @@ class RankMessaging(Messaging):
             # Send rank
             json = str(self.cloud.generate_rank())
             self.redis.publish(self.channel, json)
-            sleep(0.25)
+            sleep(0.5)
