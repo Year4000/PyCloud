@@ -46,7 +46,7 @@ PID_FILE = RUN_FOLDER + 'pycloud.pid'
 
 
 def start_daemon():
-    """Spins off a process that runs as a daemon."""
+    """ Spins off a process that runs as a daemon """
     pid = os.fork()
     _log.info('Forked new process, pid={0}'.format(pid))
 
