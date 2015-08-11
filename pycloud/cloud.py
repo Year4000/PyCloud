@@ -16,28 +16,11 @@
 
 """ The daemon process that manages the servers """
 
-import threading
-import logging
-import sys
 import os
 import datetime
-from time import time, sleep
-from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
-from .managers import Session, Rank, DATA_DIR
-from .utils import generate_id, remove, check_not_none, default_val
-
-try:
-    from redis import Redis
-    from redis.exceptions import ConnectionError
-    import yaml
-except ImportError:
-    Redis = None
-    yaml = None
-    ConnectionError = None
-
-    if __name__ == "__main__":
-        print('Fail to import, make sure to run ./install.py first')
-        sys.exit(1)
+from time import time
+from .managers import Session, Rank
+from .utils import generate_id, check_not_none
 
 
 CONFIG_PATH = '/etc/year4000/pycloud/'
@@ -154,92 +137,3 @@ class Cloud:
             sessions.append(session.id)
 
         return Rank(self.id, score, time(), sessions)
-
-
-def main():
-    """ Deploy all the needed threads """
-    cloud = Cloud.get()
-    group = Cloud._Cloud__group
-    _log.info('PyCloud ID: ' + cloud.id)
-    _log.info('Group: ' + group)
-
-    _log.info('Importing settings')
-    with open(CONFIG_FILE, 'r') as config:
-        cloud.settings = yaml.load(config)
-        host = default_val(cloud.settings['redis']['host'], 'localhost')
-        port = default_val(cloud.settings['redis']['port'], 6379)
-
-        # Only update region if not pycloud
-        if cloud.settings['region'] is not None and group != cloud.settings['region']:
-            group = cloud.settings['region']
-            _log.info("Group: " + group)
-
-    _log.info('Purging old sessions')
-    for folder in os.listdir(DATA_DIR):
-        remove(DATA_DIR + folder)
-
-    redis = Redis(host, port)
-    redis_create_messaging = CreateMessaging(cloud, redis)
-    redis_status_messaging = StatusMessaging(cloud, redis)
-    redis_remove_messaging = RemoveMessaging(cloud, redis)
-    redis_rank_messaging = RankMessaging(cloud, redis)
-
-    # Make sure the connection to redis exists
-    while True:
-        try:
-            redis.ping()
-            break
-        except ConnectionError:
-            _log.error('Trying to connect to redis again')
-            sleep(1)
-
-    # Start the messaging channel to handle sessions
-    daemon_thread(redis_create_messaging.clock, 'Create Channel')
-    daemon_thread(redis_status_messaging.clock, 'Status Channel')
-    daemon_thread(redis_remove_messaging.clock, 'Remove Channel')
-
-    # Start to accept rank score
-    daemon_thread(redis_rank_messaging.clock, 'Rank Input')
-
-    # Start the clock to send the rank score
-    daemon_thread(redis_rank_messaging.send, 'Rank Output')
-
-
-def daemon_thread(target, name=None):
-    """ Create a daemon thread with specific target """
-    thread = threading.Thread(target=target)
-    thread.setDaemon(True)
-
-    if name is not None:
-        thread.setName('PyCloud ' + name.title() + ' Thread')
-
-    thread.start()
-    return thread
-
-
-def read_loop():
-    """ An infinite loop """
-
-    try:
-        while True:
-            input('')
-    except KeyboardInterrupt:
-        _log.info('Ending...')
-
-        for session in Cloud.get().sessions:
-            session.remove()
-
-
-if __name__ == '__main__':
-    _log = logging.getLogger('pycloud')
-    _log.setLevel(logging.INFO)
-    formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
-    stream_handler = logging.StreamHandler(stream=sys.stdout)
-    stream_handler.setFormatter(formatter)
-    file_handler = logging.FileHandler(FILE_LOG)
-    file_handler.setFormatter(formatter)
-    _log.addHandler(stream_handler)
-    _log.addHandler(file_handler)
-
-    main()
-    read_loop()

@@ -12,10 +12,10 @@ Run the python script `install.py`
 ## Running
 
 In single session mode
-> python3 -m pycloud.cloud_daemon
+> python3 -m pycloud.app
 
 In system daemon mode
-> tmux new -s PyCloud -n PyCloud -d 'python3 -m pycloud.cloud_daemon'
+> python3 -m pycloud.app --daemon
 
 ## Redis Channels
 
