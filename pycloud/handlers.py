@@ -71,6 +71,7 @@ class CreateMessaging(Messaging):
             script = check_not_none(json['script'])
 
             if self.cloud.is_server():
+                sleep(0.25)
                 session = self.cloud.create_session(script)
                 results = {'id': session.id}
                 self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
@@ -98,6 +99,7 @@ class RemoveMessaging(Messaging):
             if status:
                 self.cloud.remove_session(session)
 
+            sleep(0.25)
             results = {'session': session, 'status': status}
             self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
@@ -120,6 +122,7 @@ class StatusMessaging(Messaging):
             hash_id = check_not_none(json['id'])
             session = check_not_none(json['session'])
 
+            sleep(0.25)
             results = {'id': session, 'status': self.cloud.is_session(session)}
             self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
