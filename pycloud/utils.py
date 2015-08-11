@@ -51,7 +51,10 @@ def remove(path):
         if checks > max_checks:
             break
 
-        shutil.rmtree(check_not_none(path))
+        try:
+            shutil.rmtree(check_not_none(path))
+        except OSError:
+            break
 
 
 def copy(in_path, out_path):
