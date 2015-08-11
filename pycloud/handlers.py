@@ -47,7 +47,10 @@ class Messaging:
             if not data['type'] == 'message':
                 continue
 
-            self.process(data['data'])
+            try:
+                self.process(data['data'])
+            except Exception as error:
+                _log.error("Exception while processing data: " + str(error))
 
     def process(self, data):
         """ The method that will be called when processing the data """
