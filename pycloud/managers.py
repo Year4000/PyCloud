@@ -66,11 +66,23 @@ class Session:
         self.id = generate_id()
         self.cloud = check_not_none(cloud)
         self.script = check_not_none(script)
-        port_pos = cloud.session_counter % 10000 if cloud.session_counter > 10000 else cloud.session_counter
-        self.port = cloud.ports[int(port_pos)]
         self.session_dir = DATA_DIR + self.id + '/'
         self.session_script = self.session_dir + 'pycloud.init'
         self.session_config = self.session_dir + 'pycloud.json'
+
+        while True:
+            port_pos = cloud.session_counter % 10000 if cloud.session_counter > 10000 else cloud.session_counter
+            self.port = cloud.ports[int(port_pos)]
+
+            try:
+                # Try to connect to the port
+                with socket.socket() as connection:
+                    connection.connect(('', self.port))
+
+                # Connection successful, try another port
+                cloud.session_counter += 1
+            except ConnectionRefusedError:
+                break
 
     def create(self):
         """ Create the session """
