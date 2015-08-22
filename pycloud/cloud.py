@@ -18,8 +18,9 @@
 
 import os
 import datetime
+from json import JSONEncoder
 from time import time
-from .managers import Session, Rank
+from .managers import Session
 from .utils import generate_id, check_not_none
 
 
@@ -130,10 +131,42 @@ class Cloud:
 
     def generate_rank(self):
         """ Generate a rank object to send through redis """
-        score = len(self.sessions)
-        sessions = []
+        return Rank(cloud=self)
 
-        for session in self.sessions:
-            sessions.append(session.id)
 
-        return Rank(self.id, score, time(), sessions)
+class Rank:
+    """ The object that represents the rank of each cloud """
+
+    def __init__(self, cloud_id=None, score=None, unix_time=None, sessions=None, cloud=None):
+        if cloud is not None:
+            self.id = cloud.id
+            self.score = len(cloud.sessions)
+            self.time = time()
+            self.sessions = []
+
+            for session in cloud.sessions:
+                self.sessions.append(session.id)
+        else:
+            self.id = check_not_none(cloud_id, 'Must include cloud id')
+            self.score = int(check_not_none(score, 'Must include cloud score'))
+            self.time = check_not_none(unix_time, 'Must include unix time of updated')
+            self.sessions = check_not_none(sessions, 'Must include the sessions the cloud is running')
+
+    __lt__ = lambda self, other: self.score < other.score
+    __le__ = lambda self, other: self.score <= other.score
+    __gt__ = lambda self, other: self.score > other.score
+    __ge__ = lambda self, other: self.score >= other.score
+    __eq__ = lambda self, other: self.id == other.id
+    __ne__ = lambda self, other: self.id != other.id
+    __hash__ = lambda self: int(self.id, 16)
+
+    def __str__(self):
+        return JSONEncoder().encode({
+            'id': self.id,
+            'score': self.score,
+            'time': self.time,
+            'sessions': self.sessions,
+        })
+
+    def __repr__(self):
+        return 'Rank' + self.__str__()

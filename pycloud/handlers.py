@@ -20,7 +20,7 @@ from time import sleep
 from json import JSONDecoder
 import threading
 import logging
-from .managers import Rank
+from .cloud import Rank
 from .utils import check_not_none
 
 _log = logging.getLogger('pycloud')
