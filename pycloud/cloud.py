@@ -58,7 +58,7 @@ class Cloud:
         sessions = []
 
         for session in self.__sessions:
-            sessions.append(session.id)
+            sessions.append(repr(session))
 
         return sessions
 

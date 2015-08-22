@@ -106,6 +106,10 @@ class Session:
 
         Tmux(self.id).create(self.session_script)
 
+    def __repr__(self):
+        """ Use the session id to represent this session """
+        return self.id
+
 
 class Tmux:
     """ The wrapper to handle TMUX """
