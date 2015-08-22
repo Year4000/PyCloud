@@ -76,7 +76,7 @@ class CreateMessaging(Messaging):
             if self.cloud.is_server():
                 sleep(0.25)
                 session = self.cloud.create_session(script)
-                results = {'id': session.id}
+                results = {'cloud': self.cloud.id, 'id': session.id}
                 self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Input error: ' + str(error))
@@ -102,9 +102,10 @@ class RemoveMessaging(Messaging):
             if status:
                 self.cloud.remove_session(session)
 
-            sleep(0.25)
-            results = {'session': session, 'status': status}
-            self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
+            if status or (not status and self.cloud.is_server()):
+                sleep(0.25)
+                results = {'cloud': self.cloud.id, 'session': session, 'status': status}
+                self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Remove error: ' + str(error))
 
@@ -124,10 +125,12 @@ class StatusMessaging(Messaging):
         try:
             hash_id = check_not_none(json['id'])
             session = check_not_none(json['session'])
+            status = self.cloud.is_session(session)
 
-            sleep(0.25)
-            results = {'id': session, 'status': self.cloud.is_session(session)}
-            self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
+            if status or (not status and self.cloud.is_server()):
+                sleep(0.25)
+                results = {'cloud': self.cloud.id, 'id': session, 'status': status}
+                self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.info('Status error: ' + str(error))
 
