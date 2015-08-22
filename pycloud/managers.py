@@ -27,10 +27,14 @@ from .utils import check_not_none, generate_id, remove, default_val
 _log = logging.getLogger('pycloud')
 SESSION_DIR = '/var/run/year4000/pycloud/'
 DATA_DIR = '/var/lib/year4000/pycloud/'
+PORT_RANGE = '/proc/sys/net/ipv4/ip_local_port_range'
 
 
 class Session:
     """ The session object that represents the session """
+
+    __port_counter = 0
+    __ports = []
 
     def __init__(self, cloud, script):
         """ Generate this session with the cloud instance """
@@ -41,19 +45,29 @@ class Session:
         self.session_script = self.session_dir + 'pycloud.init'
         self.session_config = self.session_dir + 'pycloud.json'
 
+        # Read port range file
+        if len(Session.__ports) == 0:
+            with open(PORT_RANGE, 'r') as port_range:
+                ports = port_range.read().split()
+                min_port = int(ports[0])
+                max_port = int(ports[1])
+
+            Session.__ports = range(min_port, max_port)
+
         while True:
-            port_pos = cloud.session_counter % 10000 if cloud.session_counter > 10000 else cloud.session_counter
-            self.port = cloud.ports[int(port_pos)]
+            Session.__port_counter = 0 if Session.__port_counter >= len(Session.__ports) else Session.__port_counter
+            self.port = Session.__ports[Session.__port_counter]
 
             try:
                 # Try to connect to the port
                 with socket.socket() as connection:
                     connection.connect(('', self.port))
 
-                # Connection successful, try another port
-                cloud.session_counter += 1
             except ConnectionRefusedError:
                 break
+            finally:
+                # All ways increment port counter
+                Session.__port_counter += 1
 
     def create(self):
         """ Create the session """
