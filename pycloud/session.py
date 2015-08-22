@@ -39,6 +39,7 @@ class Session:
     def __init__(self, cloud, script):
         """ Generate this session with the cloud instance """
         self.id = generate_id()
+        self.pid = -1
         self.cloud = check_not_none(cloud)
         self.script = check_not_none(script)
         self.session_dir = DATA_DIR + self.id + '/'
@@ -90,6 +91,14 @@ class Session:
         """ Remove the session """
         _log.info('Remove session: ' + self.id)
         Session.Tmux(self.id).remove()
+
+        if self.pid > 0:
+            try:
+                subprocess.call("kill -9 " + str(self.pid))
+            except FileNotFoundError:
+                # Process is not running
+                pass
+
         remove(self.session_dir)
 
     def start(self):
@@ -104,7 +113,7 @@ class Session:
             })
             print(pretty, file=file)
 
-        Session.Tmux(self.id).create(self.session_script)
+        self.pid = Session.Tmux(self.id).create(self.session_script)
 
     def __repr__(self):
         """ Use the session id to represent this session """
@@ -121,7 +130,7 @@ class Session:
         def __cmd(command):
             try:
                 args = ('tmux',) + tuple(command)
-                subprocess.call(args)
+                return subprocess.Popen(args)
             except:
                 _log.info('Could not process tmux cmd')
                 raise
@@ -133,9 +142,9 @@ class Session:
             if cmd is not None:
                 args += ('-d', cmd)
 
-            Session.Tmux.__cmd(args)
+            return Session.Tmux.__cmd(args).pid
 
         def remove(self):
             """ Remove tmux session """
             args = ('kill-session', '-t', self.session)
-            Session.Tmux.__cmd(args)
+            return Session.Tmux.__cmd(args).pid
