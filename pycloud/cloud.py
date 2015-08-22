@@ -28,6 +28,7 @@ CONFIG_PATH = '/etc/year4000/pycloud/'
 CONFIG_FILE = CONFIG_PATH + 'settings.yml'
 LOG_FOLDER = '/var/log/year4000/pycloud/'
 FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
+PORT_RANGE = '/proc/sys/net/ipv4/ip_local_port_range'
 
 
 class Cloud:
@@ -41,7 +42,14 @@ class Cloud:
         self.id = generate_id()
         self.sessions = []
         self.session_counter = 0
-        self.ports = range(50000, 60001)
+
+        # Read port range file
+        with open(PORT_RANGE, 'r') as port_range:
+            ports = port_range.read().split()
+            min_port = int(ports[0])
+            max_port = int(ports[1])
+
+        self.ports = range(min_port, max_port)
         self.settings = None
         self.__ranks = set()
         self.__ranks.add(self.generate_rank())
