@@ -81,8 +81,8 @@ def shutdown_daemon(*args):
     _log.info('Shutting down PyCloud')
 
     # Close all running session
-    for session in Cloud.get().sessions:
-        session.remove()
+    for session in Cloud.get().sessions():
+        Cloud.get().remove_session(session)
 
     if len(args) > 0:
         os.remove(PID_FILE)

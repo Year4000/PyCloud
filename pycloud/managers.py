@@ -100,7 +100,7 @@ class Session:
             pretty = JSONEncoder(indent=4, separators=[',', ': ']).encode({
                 'hostname': default_val(self.cloud.settings['hostname'], socket.gethostname()),
                 'port': self.port,
-                'sessions': len(self.cloud.sessions),
+                'sessions': len(self.cloud.sessions()),
             })
             print(pretty, file=file)
 

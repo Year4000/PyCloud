@@ -38,8 +38,8 @@ class Cloud:
     def __init__(self):
         Cloud.__inst = self
         self.id = generate_id()
-        self.sessions = []
-        self.session_counter = 0
+        self.__sessions = []
+        self.__session_counter = 0
         self.settings = None
         self.__group = os.getenv('PYCLOUD_GROUP', 'pycloud')
         self.__ranks = set()
@@ -53,6 +53,15 @@ class Cloud:
 
         return Cloud.__inst
 
+    def sessions(self):
+        """ Get all the session ids that are running """
+        sessions = []
+
+        for session in self.__sessions:
+            sessions.append(session.id)
+
+        return sessions
+
     def group(self, group=None):
         """ Get or set the group for the cloud """
         if group is None:
@@ -63,10 +72,10 @@ class Cloud:
     def create_session(self, script):
         """ Create a new session from the json input """
         session = Session(self, script)
-        self.sessions.append(session)
+        self.__sessions.append(session)
         session.create()
         session.start()
-        self.session_counter += 1
+        self.__session_counter += 1
         return session
 
     def is_session(self, hash_id):
@@ -74,7 +83,7 @@ class Cloud:
         session = None
         check_not_none(hash_id)
 
-        for node in self.sessions:
+        for node in self.__sessions:
             if node.id == hash_id:
                 session = node
 
@@ -85,14 +94,14 @@ class Cloud:
         session = None
         check_not_none(hash_id)
 
-        for node in self.sessions:
+        for node in self.__sessions:
             if node.id == hash_id:
                 session = node
 
         if session is None:
             raise Exception('Session not found')
 
-        self.sessions.remove(session)
+        self.__sessions.remove(session)
         session.remove()
         return session
 
@@ -146,12 +155,9 @@ class Rank:
     def __init__(self, cloud_id=None, score=None, unix_time=None, sessions=None, cloud=None):
         if cloud is not None:
             self.id = cloud.id
-            self.score = len(cloud.sessions)
             self.time = time()
-            self.sessions = []
-
-            for session in cloud.sessions:
-                self.sessions.append(session.id)
+            self.sessions = cloud.sessions()
+            self.score = len(self.sessions)
         else:
             self.id = check_not_none(cloud_id, 'Must include cloud id')
             self.score = int(check_not_none(score, 'Must include cloud score'))
