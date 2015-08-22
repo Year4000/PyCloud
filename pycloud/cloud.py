@@ -18,6 +18,7 @@
 
 import os
 import datetime
+from threading import Lock
 from json import JSONEncoder
 from time import time
 from .session import Session
@@ -37,6 +38,8 @@ class Cloud:
 
     def __init__(self):
         Cloud.__inst = self
+        self.__sessions_lock = Lock()
+        self.__ranks_lock = Lock()
         self.id = generate_id()
         self.__sessions = []
         self.__session_counter = 0
@@ -71,11 +74,14 @@ class Cloud:
 
     def create_session(self, script):
         """ Create a new session from the json input """
-        session = Session(self, script)
-        self.__sessions.append(session)
-        session.create()
-        session.start()
-        self.__session_counter += 1
+        with self.__sessions_lock:
+            session = Session(self, script)
+            self.__sessions.append(session)
+            self.__session_counter += 1
+
+            session.create()
+            session.start()
+
         return session
 
     def is_session(self, hash_id):
@@ -101,8 +107,10 @@ class Cloud:
         if session is None:
             raise Exception('Session not found')
 
-        self.__sessions.remove(session)
-        session.remove()
+        with self.__sessions_lock:
+            self.__sessions.remove(session)
+            session.remove()
+
         return session
 
     def remove_ranks(self):
@@ -110,9 +118,10 @@ class Cloud:
         current_time = time() - 1
         copy_ranks = self.__ranks.copy()
 
-        for rank in copy_ranks:
-            if rank.time < current_time:
-                self.__ranks.remove(rank)
+        with self.__ranks_lock:
+            for rank in copy_ranks:
+                if rank.time < current_time:
+                    self.__ranks.remove(rank)
 
     def get_ranks(self):
         """ Remove outdated ranks """
@@ -132,11 +141,12 @@ class Cloud:
         if not isinstance(rank, Rank):
             raise TypeError('Rank must be a Rank type')
 
-        if rank not in self.__ranks:
-            self.__ranks.add(rank)
-        else:
-            self.__ranks.remove(rank)
-            self.__ranks.add(rank)
+        with self.__ranks_lock:
+            if rank not in self.__ranks:
+                self.__ranks.add(rank)
+            else:
+                self.__ranks.remove(rank)
+                self.__ranks.add(rank)
 
     def is_server(self):
         """ Check if this session is this session """
