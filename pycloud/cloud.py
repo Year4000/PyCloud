@@ -34,7 +34,6 @@ class Cloud:
     """ The cloud instance that stores the sessions that are running """
 
     __inst = None
-    __group = os.getenv('PYCLOUD_GROUP', 'pycloud')
 
     def __init__(self):
         Cloud.__inst = self
@@ -42,6 +41,7 @@ class Cloud:
         self.sessions = []
         self.session_counter = 0
         self.settings = None
+        self.__group = os.getenv('PYCLOUD_GROUP', 'pycloud')
         self.__ranks = set()
         self.__ranks.add(self.generate_rank())
 
@@ -52,6 +52,13 @@ class Cloud:
             Cloud.__inst = Cloud()
 
         return Cloud.__inst
+
+    def group(self, group=None):
+        """ Get or set the group for the cloud """
+        if group is None:
+            return self.__group
+        else:
+            self.__group = group
 
     def create_session(self, script):
         """ Create a new session from the json input """

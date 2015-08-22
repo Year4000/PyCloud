@@ -92,7 +92,7 @@ def shutdown_daemon(*args):
 def main():
     """ Deploy all the needed threads """
     cloud = Cloud.get()
-    group = Cloud._Cloud__group
+    group = cloud.group()
     _log.info('PyCloud ID: ' + cloud.id)
     _log.info('Group: ' + group)
 
@@ -104,7 +104,7 @@ def main():
 
         # Only update region if not pycloud
         if cloud.settings['region'] is not None and group != cloud.settings['region']:
-            group = cloud.settings['region']
+            cloud.group(cloud.settings['region'])
             _log.info("Group: " + group)
 
     _log.info('Purging old sessions')
