@@ -89,7 +89,7 @@ class Session:
     def remove(self):
         """ Remove the session """
         _log.info('Remove session: ' + self.id)
-        Tmux(self.id).remove()
+        Session.Tmux(self.id).remove()
         remove(self.session_dir)
 
     def start(self):
@@ -104,39 +104,38 @@ class Session:
             })
             print(pretty, file=file)
 
-        Tmux(self.id).create(self.session_script)
+        Session.Tmux(self.id).create(self.session_script)
 
     def __repr__(self):
         """ Use the session id to represent this session """
         return self.id
 
+    class Tmux:
+        """ The wrapper to handle TMUX """
 
-class Tmux:
-    """ The wrapper to handle TMUX """
+        def __init__(self, session, name='PyCloud'):
+            self.session = check_not_none(session)
+            self.name = name
 
-    def __init__(self, session, name='PyCloud'):
-        self.session = check_not_none(session)
-        self.name = name
+        @staticmethod
+        def __cmd(command):
+            try:
+                args = ('tmux',) + tuple(command)
+                subprocess.call(args)
+            except:
+                _log.info('Could not process tmux cmd')
+                raise
 
-    @staticmethod
-    def __cmd(command):
-        try:
-            args = ('tmux',) + tuple(command)
-            subprocess.call(args)
-        except:
-            _log.info('Could not process tmux cmd')
-            raise
+        def create(self, cmd=None):
+            """ Create a new tmux session """
+            args = ('new', '-s', self.session, '-n', self.name)
 
-    def create(self, cmd=None):
-        """ Create a new tmux session """
-        args = ('new', '-s', self.session, '-n', self.name)
+            if cmd is not None:
+                args += ('-d', cmd)
 
-        if cmd is not None:
-            args += ('-d', cmd)
+            Session.Tmux.__cmd(args)
 
-        Tmux.__cmd(args)
-
-    def remove(self):
-        """ Remove tmux session """
-        args = ('kill-session', '-t', self.session)
-        Tmux.__cmd(args)
+        def remove(self):
+            """ Remove tmux session """
+            args = ('kill-session', '-t', self.session)
+            Session.Tmux.__cmd(args)

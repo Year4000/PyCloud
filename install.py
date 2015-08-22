@@ -17,7 +17,7 @@
 import os
 from pycloud.utils import install, is_root, copy
 from pycloud.cloud import LOG_FOLDER, CONFIG_PATH, CONFIG_FILE
-from pycloud.managers import SESSION_DIR, DATA_DIR
+from pycloud.session import SESSION_DIR, DATA_DIR
 from pycloud.app import RUN_FOLDER
 
 

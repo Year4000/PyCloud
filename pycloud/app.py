@@ -22,7 +22,7 @@ import logging
 import os
 import signal
 from time import sleep
-from .managers import DATA_DIR
+from .session import DATA_DIR
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .utils import remove, default_val
 from .cloud import Cloud, CONFIG_FILE, FILE_LOG

@@ -20,7 +20,7 @@ import os
 import datetime
 from json import JSONEncoder
 from time import time
-from .managers import Session
+from .session import Session
 from .utils import generate_id, check_not_none
 
 
