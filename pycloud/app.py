@@ -143,7 +143,7 @@ def main(nodes=None):
         for i in range(0, nodes):
             cloud.create_session('#!/bin/bash\n sleep 240')
 
-        _log.info(cloud.sessions())
+        _log.info('Test Sessions: ' + str(cloud.sessions()))
 
     # Keep app running
     while True:
