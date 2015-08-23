@@ -170,6 +170,10 @@ if __name__ == '__main__':
     file_handler.setFormatter(formatter)
     _log.addHandler(file_handler)
 
+    # Make sure run folder exists
+    if not os.path.exists(RUN_FOLDER):
+        os.makedirs(RUN_FOLDER)
+
     # Get the number of test nodes
     test_nodes = None
     if '--testnodes' in sys.argv and len(sys.argv) > 2:
