@@ -58,10 +58,10 @@ class Cloud:
 
     def sessions(self):
         """ Get all the session ids that are running """
-        sessions = []
+        sessions = ()
 
         for session in self.__sessions:
-            sessions.append(repr(session))
+            sessions += (repr(session),)
 
         return sessions
 
