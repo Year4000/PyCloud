@@ -45,7 +45,7 @@ RUN_FOLDER = '/var/run/year4000/pycloud/'
 PID_FILE = RUN_FOLDER + 'pycloud.pid'
 
 
-def start_daemon():
+def start_daemon(nodes=None):
     """ Spins off a process that runs as a daemon """
     pid = os.fork()
     _log.info('Forked new process, pid={0}'.format(pid))
@@ -73,7 +73,7 @@ def start_daemon():
     _log.info('Send SIGABRT to shutdown daemon')
     signal.signal(signal.SIGABRT, shutdown_daemon)
 
-    main()
+    main(nodes)
 
 
 def shutdown_daemon(*args):
@@ -89,8 +89,9 @@ def shutdown_daemon(*args):
         raise SystemExit('Terminating on signal number {0}'.format(args[0]))
 
 
-def main():
+def main(nodes=None):
     """ Deploy all the needed threads """
+    nodes = int(0 if nodes is None else nodes)
     cloud = Cloud.get()
     group = cloud.group()
     _log.info('PyCloud ID: ' + cloud.id)
@@ -137,6 +138,13 @@ def main():
     # Start the clock to send the rank score
     daemon_thread(redis_rank_messaging.send, 'Rank Output')
 
+    # Spin up test nodes for testing
+    if nodes > 0:
+        for i in range(0, nodes):
+            cloud.create_session('#!/bin/bash\n sleep 240')
+
+        _log.info(cloud.sessions())
+
     # Keep app running
     while True:
         sleep(1)
@@ -162,14 +170,21 @@ if __name__ == '__main__':
     file_handler.setFormatter(formatter)
     _log.addHandler(file_handler)
 
+    # Get the number of test nodes
+    test_nodes = None
+    if '--testnodes' in sys.argv and len(sys.argv) > 2:
+        pos = sys.argv.index('--testnodes')
+        test_nodes = sys.argv[pos + 1]
+
+    # Start the system
     if '--daemon' in sys.argv:
-        start_daemon()
+        start_daemon(test_nodes)
     else:
         stream_handler = logging.StreamHandler(stream=sys.stdout)
         stream_handler.setFormatter(formatter)
         _log.addHandler(stream_handler)
 
         try:
-            main()
+            main(test_nodes)
         except KeyboardInterrupt:
             shutdown_daemon()
