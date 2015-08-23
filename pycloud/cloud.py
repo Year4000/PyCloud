@@ -152,7 +152,7 @@ class Cloud:
         """ Check if this session is this session """
         ranks = self.get_ranks()
 
-        return ranks[len(ranks) - 1].id == self.id
+        return len(ranks) > 0 and ranks[0].id == self.id
 
     def generate_rank(self):
         """ Generate a rank object to send through redis """
