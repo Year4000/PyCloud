@@ -176,9 +176,11 @@ if __name__ == '__main__':
 
     # Get the number of test nodes
     test_nodes = None
-    if '--testnodes' in sys.argv and len(sys.argv) > 2:
-        pos = sys.argv.index('--testnodes')
-        test_nodes = sys.argv[pos + 1]
+    if '--test-nodes' in sys.argv:
+        pos = sys.argv.index('--test-nodes')
+
+        if pos + 1 < len(sys.argv):
+            test_nodes = sys.argv[pos + 1]
 
     # Start the system
     if '--daemon' in sys.argv:
