@@ -22,7 +22,7 @@ from pycloud.app import RUN_FOLDER
 
 
 INSTALL_PATH = '/opt/year4000/'
-REQUIREMENTS = ('tmux', 'python3-redis', 'python3-yaml')
+REQUIREMENTS = ('tmux', 'python3-redis', 'python3-yaml', 'python3-psutil')
 
 
 def main():

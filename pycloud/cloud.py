@@ -17,12 +17,22 @@
 """ The daemon process that manages the servers """
 
 import os
+import sys
 import datetime
 from threading import Lock
 from json import JSONEncoder
 from time import time
 from .session import Session
 from .utils import generate_id, check_not_none
+
+try:
+    import psutil
+except ImportError:
+    psutil = None
+
+    if __name__ == "__main__":
+        print('Fail to import, make sure to run ./install.py first')
+        sys.exit(1)
 
 
 CONFIG_PATH = '/etc/year4000/pycloud/'
@@ -167,7 +177,7 @@ class Rank:
             self.id = cloud.id
             self.time = time()
             self.sessions = cloud.sessions()
-            self.score = len(self.sessions)
+            self.score = len(self.sessions) + (psutil.cpu_percent() + psutil.virtual_memory()[2]) / 2
         else:
             self.id = check_not_none(cloud_id, 'Must include cloud id')
             self.score = int(check_not_none(score, 'Must include cloud score'))
