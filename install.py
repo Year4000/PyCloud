@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-from pycloud.utils import install, is_root, copy
+import sys
+from pycloud.utils import install, is_root, copy, remove
 from pycloud.cloud import LOG_FOLDER, CONFIG_PATH, CONFIG_FILE
 from pycloud.session import SESSION_DIR, DATA_DIR
 from pycloud.app import RUN_FOLDER
@@ -27,8 +28,6 @@ REQUIREMENTS = ('tmux', 'python3-redis', 'python3-yaml', 'python3-psutil')
 
 def main():
     """ The main function to run """
-    global REQUIREMENTS
-
     print('INFO: Checking and installing requirements')
     for need in REQUIREMENTS:
         print(' - ', end='')
@@ -38,10 +37,10 @@ def main():
         """ Install dir path """
         try:
             os.makedirs(path)
-        except:
+        except OSError:
             print('NOTICE: Install path ' + path + ' exists, skipping stage')
         finally:
-            os.system("chmod 777 " + path)
+            os.chmod(path, 0o777)
 
     print('INFO: Creating install path directories')
     make_dir(INSTALL_PATH)
@@ -51,13 +50,23 @@ def main():
     make_dir(CONFIG_PATH)
     make_dir(RUN_FOLDER)
 
+    def copy_update(old, new, can_update=False):
+        """ Copy the files or folder but allow for updating """
+        try:
+            if '--update' in sys.argv and can_update:
+                remove(new)
+            elif os.path.exists(new):
+                raise OSError(new)
+
+            copy(old, new)
+        except OSError:
+            message = 'run again with --update' if can_update else 'you have install it yourself'
+            print('ERROR: {0} installed, {1}'.format(new, message))
+
     print('INFO: Copying files to install path')
-    try:
-        copy('pycloudd', '/etc/init.d/pycloudd')
-        copy('settings.yml', CONFIG_FILE)
-        copy('pycloud', INSTALL_PATH + 'pycloud')
-    except:
-        print('ERROR: PyCloud is already installed, remove ' + INSTALL_PATH + 'pycloud')
+    copy_update('settings.yml', CONFIG_FILE)
+    copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
+    copy_update('pycloud', INSTALL_PATH + 'pycloud', can_update=True)
 
 
 if __name__ == '__main__':
