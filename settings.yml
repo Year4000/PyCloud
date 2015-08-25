@@ -6,7 +6,8 @@ region: "pycloud"
 # The address to use in pycloud.json, blank for system default
 hostname:
 
-# The redis connection host and port
+# The redis connection host, port, and password
 redis:
   host: "localhost"
   port: 6379
+  password:

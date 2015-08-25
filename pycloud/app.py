@@ -100,8 +100,10 @@ def main(nodes=None):
     _log.info('Importing settings')
     with open(CONFIG_FILE, 'r') as config:
         cloud.settings = yaml.load(config)
-        host = default_val(cloud.settings['redis']['host'], 'localhost')
-        port = default_val(cloud.settings['redis']['port'], 6379)
+        redis_config = cloud.settings['redis']
+        host = default_val(redis_config['host'], 'localhost')
+        port = default_val(redis_config['port'], 6379)
+        password = redis_config['password'] if 'password' in redis_config else None
 
         # Only update region if not pycloud
         if cloud.settings['region'] is not None and group != cloud.settings['region']:
@@ -112,7 +114,7 @@ def main(nodes=None):
     for folder in os.listdir(DATA_DIR):
         remove(DATA_DIR + folder)
 
-    redis = Redis(host, port)
+    redis = Redis(host, port, password=password)
     redis_create_messaging = CreateMessaging(cloud, redis)
     redis_status_messaging = StatusMessaging(cloud, redis)
     redis_remove_messaging = RemoveMessaging(cloud, redis)
