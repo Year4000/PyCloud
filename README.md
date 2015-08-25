@@ -6,8 +6,11 @@ with redis messaging channels.
 
 ## Installation
 
-Run the python script `install.py`
+Run the python script `install.py`. When updating make sure to remove old paths.
 
+## Daemon Script
+
+When installing there is a daemon script that is a wrapper for the commands bellow.
 
 ## Running
 

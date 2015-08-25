@@ -53,6 +53,7 @@ def main():
 
     print('INFO: Copying files to install path')
     try:
+        copy('pycloudd', '/etc/init.d/pycloudd')
         copy('settings.yml', CONFIG_FILE)
         copy('pycloud', INSTALL_PATH + 'pycloud')
     except:

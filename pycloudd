@@ -1,0 +1,139 @@
+#!/usr/bin/python3
+# Copyright 2015 Year4000.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+### BEGIN INIT INFO
+# Provides:   pycloudd
+# Required-Start: $local_fs $remote_fs $network
+# Required-Stop:  $local_fs $remote_fs $network
+# Default-Start:  4 5 6
+# Default-Stop:   0 1 6
+# Short-Description: Manages the PyCloud Daemon
+# Description: Manages the PyCloud daemon by providing
+#       a wrapper for common PyCloud tasks.
+### END INIT INFO
+
+import sys
+import os
+import time
+import signal
+
+RUN_FOLDER = '/var/run/year4000/pycloud/'
+PID_FILE = RUN_FOLDER + 'pycloud.pid'
+USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status}}'
+
+
+class PyCloudError(BaseException):
+    """ A basic error for PyCloud """
+
+    def __init__(self, message, *args, **kwargs):
+        self.__message = str(message).format(*args, **kwargs)
+
+    def get_message(self):
+        """ Get the formatted message of the error """
+        return self.__message
+
+
+def get_pid(throw=True):
+    """ Get the pid or raise an exception """
+    if os.path.exists(PID_FILE):
+        with open(PID_FILE) as pid_file:
+            return int(pid_file.read())
+    else:
+        if throw:
+            raise PyCloudError('No process id file found: {0}', PID_FILE)
+        else:
+            return False
+
+
+def is_pid_running(process_id):
+    """ Check if the id is a running process """
+    try:
+        os.kill(process_id, 0)
+    except OSError:
+        return False
+    else:
+        return True
+
+
+def stop():
+    """ Stop the PyCloud daemon """
+    pid = -1
+
+    try:
+        pid = get_pid()
+        os.kill(pid, signal.SIGABRT)
+        print('PyCloud has been stopped...')
+    except OSError:
+        raise PyCloudError('Found process id {0} and PyCloud not running...', pid)
+    finally:
+        while pid > 0 and is_pid_running(pid):
+            time.sleep(0.25)
+
+        if os.path.exists(PID_FILE):
+            os.remove(PID_FILE)
+
+
+def start():
+    """ Start the PyCloud daemon """
+    if get_pid(throw=False):
+        raise PyCloudError('PyCloud is currently running...')
+    else:
+        os.chdir('/opt/year4000/')
+        os.system('python3 -m pycloud.app --daemon')
+        print('PyCloud has been started...')
+
+
+def status():
+    """ Get the status of the PyCloud daemon """
+    if get_pid(throw=False):
+        print('PyCloud is running...')
+        return True
+    else:
+        print('PyCloud is not running...')
+        return False
+
+
+try:
+    if os.getuid() != 0:
+        raise PyCloudError('PyCloud must be ran as root user')
+
+    if __name__ == "__main__" and len(sys.argv) > 1:
+        argument = sys.argv[1]
+
+        if argument == 'start':
+            start()
+        elif argument == 'stop':
+            stop()
+        elif argument == 'status':
+            status()
+        elif argument == 'restart':
+            stop()
+            start()
+        elif argument == 'force-reload':
+            try:
+                stop()
+            except PyCloudError as error:
+                print('An error has been suppressed: ' + error.get_message())
+                pass
+            finally:
+                start()
+        else:
+            raise PyCloudError(USAGE, sys.argv[0])
+    else:
+        raise PyCloudError(USAGE, sys.argv[0])
+except PyCloudError as error:
+    print(error.get_message())
+    sys.exit(1)
