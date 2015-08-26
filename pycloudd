@@ -32,7 +32,7 @@ import signal
 
 RUN_FOLDER = '/var/run/year4000/pycloud/'
 PID_FILE = RUN_FOLDER + 'pycloud.pid'
-USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status}}'
+USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status|update}}'
 
 
 class PyCloudError(BaseException):
@@ -130,6 +130,19 @@ try:
                 pass
             finally:
                 start()
+        elif argument == 'update':
+            force = ' --force' if '--force' in sys.argv else ''
+            access_token = None
+
+            if '--token' in sys.argv:
+                pos = sys.argv.index('--token')
+
+                if pos + 1 < len(sys.argv):
+                    access_token = sys.argv[pos + 1]
+
+            token = '' if access_token is None else ' --token ' + access_token
+
+            os.system('cd /opt/year4000 ; python3 -m pycloud.updater' + force + token)
         else:
             raise PyCloudError(USAGE, sys.argv[0])
     else:
