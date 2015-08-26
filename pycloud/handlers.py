@@ -79,7 +79,7 @@ class CreateMessaging(Messaging):
                 results = {'cloud': self.cloud.id, 'id': session.id}
                 self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
-            _log.info('Input error: ' + str(error))
+            _log.error('Input error: ' + str(error))
 
 
 class RemoveMessaging(Messaging):
@@ -107,7 +107,7 @@ class RemoveMessaging(Messaging):
                 results = {'cloud': self.cloud.id, 'session': session, 'status': status}
                 self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
-            _log.info('Remove error: ' + str(error))
+            _log.error('Remove error: ' + str(error))
 
 
 class StatusMessaging(Messaging):
@@ -132,7 +132,7 @@ class StatusMessaging(Messaging):
                 results = {'cloud': self.cloud.id, 'id': session, 'status': status}
                 self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
-            _log.info('Status error: ' + str(error))
+            _log.error('Status error: ' + str(error))
 
 
 class RankMessaging(Messaging):
