@@ -68,6 +68,12 @@ def main():
     copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
     copy_update('pycloud', INSTALL_PATH + 'pycloud', can_update=True)
 
+    print('INFO: Trying to let pycloud start at start up')
+    try:
+        os.system('update-rc.d pycloudd defaults')
+    except OSError:
+        print('ERROR: Could not run command auto you have to set it up yourself')
+
 
 if __name__ == '__main__':
     """ Run the install script """
