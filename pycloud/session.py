@@ -52,7 +52,7 @@ class Session:
 
     def create(self):
         """ Create the session """
-        _log.info('Create session: ' + self.id)
+        _log.info('Create session: ' + repr(self))
 
         try:
             os.makedirs(self.session_dir)
@@ -69,7 +69,7 @@ class Session:
 
     def remove(self):
         """ Remove the session """
-        _log.info('Remove session: ' + self.id)
+        _log.info('Remove session: ' + repr(self))
         Session.Tmux(self.id).remove()
 
         if self.pid > 0:
@@ -83,8 +83,6 @@ class Session:
 
     def start(self):
         """ Start the session """
-        _log.info('Start session: ' + self.id)
-
         with open(self.session_config, 'w') as file:
             pretty = JSONEncoder(indent=4, separators=[',', ': ']).encode({
                 'hostname': default_val(self.cloud.settings['hostname'], socket.gethostname()),
@@ -94,10 +92,15 @@ class Session:
             print(pretty, file=file)
 
         self.pid = Session.Tmux(self.id).create(self.session_script)
+        _log.info('Starting session: ' + str(self))
 
     def __repr__(self):
         """ Use the session id to represent this session """
         return self.id
+
+    def __str__(self):
+        """ Print out the id pid and port of this session """
+        return "id: {0}, pid: {1}, port: {2}".format(self.id, self.pid, self.port)
 
     class Tmux:
         """ The wrapper to handle TMUX """
