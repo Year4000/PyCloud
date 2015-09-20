@@ -35,37 +35,37 @@ class Session:
     def __init__(self, cloud, script):
         """ Generate this session with the cloud instance """
         self.id = generate_id()
-        self.pid = -1
-        self.cloud = check_not_none(cloud)
-        self.script = check_not_none(script)
-        self.session_dir = DATA_DIR + self.id + '/'
-        self.session_script = self.session_dir + 'pycloud.init'
-        self.session_config = self.session_dir + 'pycloud.json'
+        self.__pid = -1
+        self.__cloud = check_not_none(cloud)
+        self.__script = check_not_none(script)
+        self._session_dir = DATA_DIR + self.id + '/'
+        self._session_script = self._session_dir + 'pycloud.init'
+        self._session_config = self._session_dir + 'pycloud.json'
 
         # Grab an ephemeral port to use, if failed use port 0
         try:
             with socket.socket() as connection:
                 connection.bind(('', 0))
-                self.port = connection.getsockname()[1]
+                self._port = connection.getsockname()[1]
         except OSError:
-            self.port = 0
+            self._port = 0
 
     def create(self):
         """ Create the session """
         _log.info('Create session: ' + repr(self))
 
         try:
-            os.makedirs(self.session_dir)
+            os.makedirs(self._session_dir)
         except OSError:
             _log.error('Fail to create directory for: ' + str(self))
             raise
 
-        with open(self.session_script, 'w') as file:
-            for line in self.script.split('\n'):
+        with open(self._session_script, 'w') as file:
+            for line in self.__script.split('\n'):
                 print(line, file=file)
 
-        os.chdir(self.session_dir)
-        os.chmod(self.session_script, 0o777)
+        os.chdir(self._session_dir)
+        os.chmod(self._session_script, 0o777)
 
     def remove(self):
         """ Remove the session """
@@ -79,19 +79,19 @@ class Session:
                 # Process is not running
                 pass
 
-        remove(self.session_dir)
+        remove(self._session_dir)
 
     def start(self):
         """ Start the session """
-        with open(self.session_config, 'w') as file:
+        with open(self._session_config, 'w') as file:
             pretty = JSONEncoder(indent=4, separators=[',', ': ']).encode({
-                'hostname': default_val(self.cloud.settings['hostname'], socket.gethostname()),
-                'port': self.port,
-                'sessions': len(self.cloud.sessions()),
+                'hostname': default_val(self.__cloud.settings['hostname'], socket.gethostname()),
+                'port': self._port,
+                'sessions': len(self.__cloud.sessions()),
             })
             print(pretty, file=file)
 
-        self.pid = Session.Tmux(self.id).create(self.session_script)
+        self.pid = Session.Tmux(self.id).create(self._session_script)
         _log.info('Starting session: ' + str(self))
 
     def __repr__(self):
@@ -100,7 +100,7 @@ class Session:
 
     def __str__(self):
         """ Print out the id pid and port of this session """
-        return "id: {0}, pid: {1}, port: {2}".format(self.id, self.pid, self.port)
+        return "id: {0}, pid: {1}, port: {2}".format(self.id, self.pid, self._port)
 
     class Tmux:
         """ The wrapper to handle TMUX """

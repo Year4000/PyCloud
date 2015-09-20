@@ -36,16 +36,16 @@ class Messaging:
 
     def __init__(self, redis, channel):
         """ Create the instances with redis """
-        self.redis = redis
-        self.channel = channel
+        self._redis = redis
+        self._channel = channel
         self.__error = None
 
     def clock(self):
         """ The method that will run for ever """
         while threading.current_thread().is_alive():
             try:
-                channel = self.redis.pubsub()
-                channel.subscribe(self.channel)
+                channel = self._redis.pubsub()
+                channel.subscribe(self._channel)
 
                 if self.__error is not None:
                     self.__error = False
@@ -78,7 +78,7 @@ class CreateMessaging(Messaging):
     def __init__(self, cloud, redis):
         """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, CREATE_CHANNEL)
-        self.cloud = cloud
+        self.__cloud = cloud
 
     def process(self, data):
         """ The thread that runs and create the session based on the data """
@@ -88,11 +88,11 @@ class CreateMessaging(Messaging):
             hash_id = check_not_none(json['id'])
             script = check_not_none(json['script'])
 
-            if self.cloud.is_server():
+            if self.__cloud.is_server():
                 sleep(0.25)
-                session = self.cloud.create_session(script)
-                results = {'cloud': self.cloud.id, 'id': session.id}
-                self.redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
+                session = self.__cloud.create_session(script)
+                results = {'cloud': self.__cloud.id, 'id': session.id}
+                self._redis.publish(CREATE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.error('Input error: ' + str(error))
 
@@ -103,7 +103,7 @@ class RemoveMessaging(Messaging):
     def __init__(self, cloud, redis):
         """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, REMOVE_CHANNEL)
-        self.cloud = cloud
+        self.__cloud = cloud
 
     def process(self, data):
         """ The thread that runs and remove the session """
@@ -112,15 +112,15 @@ class RemoveMessaging(Messaging):
         try:
             hash_id = check_not_none(json['id'])
             session = check_not_none(json['session'])
-            status = self.cloud.is_session(session)
+            status = self.__cloud.is_session(session)
 
             if status:
-                self.cloud.remove_session(session)
+                self.__cloud.remove_session(session)
 
-            if status or (not status and self.cloud.is_server()):
+            if status or (not status and self.__cloud.is_server()):
                 sleep(0.25)
-                results = {'cloud': self.cloud.id, 'session': session, 'status': status}
-                self.redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
+                results = {'cloud': self.__cloud.id, 'session': session, 'status': status}
+                self._redis.publish(REMOVE_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.error('Remove error: ' + str(error))
 
@@ -131,7 +131,7 @@ class StatusMessaging(Messaging):
     def __init__(self, cloud, redis):
         """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, STATUS_CHANNEL)
-        self.cloud = cloud
+        self.__cloud = cloud
 
     def process(self, data):
         """ The thread that runs and gets the status of the session """
@@ -140,12 +140,12 @@ class StatusMessaging(Messaging):
         try:
             hash_id = check_not_none(json['id'])
             session = check_not_none(json['session'])
-            status = self.cloud.is_session(session)
+            status = self.__cloud.is_session(session)
 
-            if status or (not status and self.cloud.is_server()):
+            if status or (not status and self.__cloud.is_server()):
                 sleep(0.25)
-                results = {'cloud': self.cloud.id, 'id': session, 'status': status}
-                self.redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
+                results = {'cloud': self.__cloud.id, 'id': session, 'status': status}
+                self._redis.publish(STATUS_CHANNEL + '.' + hash_id, str(results))
         except ValueError as error:
             _log.error('Status error: ' + str(error))
 
@@ -156,26 +156,26 @@ class RankMessaging(Messaging):
     def __init__(self, cloud, redis):
         """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, RANK_CHANNEL)
-        self.cloud = cloud
+        self.__cloud = cloud
         self.__error = None
 
     def process(self, data):
         """ The thread that runs and process the rank score """
         json = JSONDecoder().decode(data.decode('utf-8'))
         rank = Rank(json['id'], json['score'], json['time'], json['sessions'])
-        self.cloud.add_rank(rank)
-        _log.debug('Cloud Nodes: ' + str(self.cloud.get_ranks()))
+        self.__cloud.add_rank(rank)
+        _log.debug('Cloud Nodes: ' + str(self.__cloud.get_ranks()))
 
     def send(self):
         """ Send the score to the other instances """
         while threading.current_thread().is_alive():
             # Remove outdated ranks
-            self.cloud.remove_ranks()
+            self.__cloud.remove_ranks()
 
             # Send rank
             try:
-                json = str(self.cloud.generate_rank())
-                self.redis.publish(self.channel, json)
+                json = str(self.__cloud.generate_rank())
+                self._redis.publish(self._channel, json)
 
                 if self.__error is not None:
                     self.__error = False
