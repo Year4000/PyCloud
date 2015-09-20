@@ -20,6 +20,7 @@ from time import sleep
 from json import JSONDecoder
 import threading
 import logging
+from redis.exceptions import RedisError
 from .cloud import Rank
 from .utils import check_not_none
 
@@ -37,20 +38,34 @@ class Messaging:
         """ Create the instances with redis """
         self.redis = redis
         self.channel = channel
+        self.__error = None
 
     def clock(self):
         """ The method that will run for ever """
-        channel = self.redis.pubsub()
-        channel.subscribe(self.channel)
-        
-        for data in channel.listen():
-            if not data['type'] == 'message':
-                continue
-
+        while threading.current_thread().is_alive():
             try:
-                self.process(data['data'])
-            except Exception as error:
-                _log.error("Exception while processing data: " + str(error))
+                channel = self.redis.pubsub()
+                channel.subscribe(self.channel)
+
+                if self.__error is not None:
+                    self.__error = False
+
+                for data in channel.listen():
+                    if self.__error is not None and not self.__error:
+                        _log.error(threading.current_thread().getName() + ": Redis error fixed")
+                        self.__error = None
+
+                    if not data['type'] == 'message':
+                        continue
+
+                    try:
+                        self.process(data['data'])
+                    except Exception as error:
+                        _log.error("Exception while processing data: " + str(error))
+            except RedisError:
+                self.__error = True
+                _log.error(threading.current_thread().getName() + ": Redis error, trying again in 5 secs")
+                sleep(5)
 
     def process(self, data):
         """ The method that will be called when processing the data """
@@ -142,6 +157,7 @@ class RankMessaging(Messaging):
         """ Create the instances with redis and cloud """
         Messaging.__init__(self, redis, RANK_CHANNEL)
         self.cloud = cloud
+        self.__error = None
 
     def process(self, data):
         """ The thread that runs and process the rank score """
@@ -157,6 +173,19 @@ class RankMessaging(Messaging):
             self.cloud.remove_ranks()
 
             # Send rank
-            json = str(self.cloud.generate_rank())
-            self.redis.publish(self.channel, json)
-            sleep(0.5)
+            try:
+                json = str(self.cloud.generate_rank())
+                self.redis.publish(self.channel, json)
+
+                if self.__error is not None:
+                    self.__error = False
+
+                if self.__error is not None and not self.__error:
+                    _log.error(threading.current_thread().getName() + ": Redis error fixed")
+                    self.__error = None
+            except RedisError:
+                self.__error = True
+                _log.error(threading.current_thread().getName() + ": Redis error, trying again in 5 secs")
+                sleep(4.5)
+            finally:
+                sleep(0.5)
