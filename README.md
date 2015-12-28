@@ -42,7 +42,7 @@ A service can use publish a JSON string on the channels above and one of the ins
 ### Create
 
 - Request Channel `year4000.pycloud.create`
-```
+```json
 {
   "id": "RANDOMLY_GENERATED_BY_USER",
   "script": "SCRIPT TO RUN ON SERVER AFTER REQUEST IS RECEIVED"
@@ -50,7 +50,7 @@ A service can use publish a JSON string on the channels above and one of the ins
 ```
 
 - Response Channel `year4000.pycloud.create.RANDOMLY_GENERATED_BY_USER`
-```
+```json
 {
   "cloud": "PYCLOUD_HASH",
   "id": "SESSION_HASH"
@@ -63,7 +63,7 @@ At this moment both Status and Remove calls are the same Request and Response bu
 
 - Request Channel `year4000.pycloud.status`
 - Request Channel `year4000.pycloud.remove`
-```
+```json
 {
   "id": "RANDOMLY_GENERATED_BY_USER",
   "session": "SESSION_HASH"
@@ -72,7 +72,7 @@ At this moment both Status and Remove calls are the same Request and Response bu
 
 - Response Channel `year4000.pycloud.status.RANDOMLY_GENERATED_BY_USER`
 - Response Channel `year4000.pycloud.remove.RANDOMLY_GENERATED_BY_USER`
-```
+```json
 {
   "cloud": "PYCLOUD_HASH",
   "id": "SESSION_HASH",
