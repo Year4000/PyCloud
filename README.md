@@ -8,6 +8,12 @@ with redis messaging channels.
 
 Run the python script `install.py`. When updating make sure to remove old paths.
 
+## Updating
+
+The system will try its best to self update with the update command. This works by using GitHub's Releases provided in the git repo.
+- Run `pycloudd update` to trigger the update checker.
+- Use `pycloudd update --force` to force an update of the current version.
+
 ## Daemon Script
 
 When installing there is a daemon script that is a wrapper for the commands bellow.
