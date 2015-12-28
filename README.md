@@ -32,3 +32,50 @@ In system daemon mode
 - **year4000.pycloud.create** Used to create a node, the payload is a JSON string
 - **year4000.pycloud.status** Used to get the status a node, the payload is a JSON string
 - **year4000.pycloud.remove** Used to remove a node, the payload is a JSON string
+
+
+## API Messaging Channel
+
+PyCloud runs with Redis to trigger the creation of nodes from multiple servers all running PyCloud.
+A service can use publish a JSON string on the channels above and one of the instances will process it.
+
+### Create
+
+- Request Channel `year4000.pycloud.create`
+```
+{
+  "id": "RANDOMLY_GENERATED_BY_USER",
+  "script": "SCRIPT TO RUN ON SERVER AFTER REQUEST IS RECEIVED"
+}
+```
+
+- Response Channel `year4000.pycloud.create.RANDOMLY_GENERATED_BY_USER`
+```
+{
+  "cloud": "PYCLOUD_HASH",
+  "id": "SESSION_HASH"
+}
+```
+
+### Status / Remove
+
+At this moment both Status and Remove calls are the same Request and Response but Status grabs the status while Remove removes the node.
+
+- Request Channel `year4000.pycloud.status`
+- Request Channel `year4000.pycloud.remove`
+```
+{
+  "id": "RANDOMLY_GENERATED_BY_USER",
+  "session": "SESSION_HASH"
+}
+```
+
+- Response Channel `year4000.pycloud.status.RANDOMLY_GENERATED_BY_USER`
+- Response Channel `year4000.pycloud.remove.RANDOMLY_GENERATED_BY_USER`
+```
+{
+  "cloud": "PYCLOUD_HASH",
+  "id": "SESSION_HASH",
+  "status": true
+}
+```
