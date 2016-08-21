@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # Copyright 2015 Year4000.
-# 
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -20,9 +20,15 @@ from time import sleep
 from json import JSONDecoder
 import threading
 import logging
-from redis.exceptions import RedisError
 from .cloud import Rank
 from .utils import check_not_none
+
+try:
+    from redis.exceptions import RedisError
+except ImportError:
+    if __name__ == "__main__":
+        print('Fail to import, make sure to run ./install.py first')
+        sys.exit(1)
 
 _log = logging.getLogger('pycloud')
 CREATE_CHANNEL = 'year4000.pycloud.create'
