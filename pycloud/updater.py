@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
+# Copyright 2016 Year4000.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,7 +43,10 @@ class Updater:
     """ The Update class that will Update PyCloud from GitHub release """
 
     def __init__(self, token):
-        self.token = '?access_token=' + token
+        if token is None:
+            self.token = ''
+        else:
+            self.token = '?access_token=' + token
         self._fetch_release()
         self.downloaded = False
 
@@ -65,7 +68,7 @@ class Updater:
         tag_name = self.json_object['tag_name'][1:6]
         need_update = version < tag_name
 
-        print('Locale Version: {0} Remote Version: {1} Update: {2}'.format(version, tag_name, need_update))
+        print('Local Version: {0} Remote Version: {1} Update: {2}'.format(version, tag_name, need_update))
         return need_update
 
     def download_update(self):
@@ -86,8 +89,8 @@ class Updater:
             raise UpdaterError('Install zip does not exist')
 
         try:
-            os.system('cd /tmp/ ; unzip -f ' + PATH)
-            os.system('/tmp/Year4000-PyCloud-{}/install.py --update'.format(self.sha))
+            os.system('cd /tmp/ ; unzip {} -d /tmp/PyCloud-{}'.format(PATH, self.sha))
+            os.system('/tmp/PyCloud-{}/*/install.py --update'.format(self.sha))
         except OSError as os_error:
             raise UpdaterError(str(os_error))
 
@@ -109,7 +112,7 @@ def main(force=False, token=''):
 
 
 if __name__ == '__main__':
-    access_token = ''
+    access_token = None
 
     if '--token' in sys.argv:
         pos = sys.argv.index('--token')
