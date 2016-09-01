@@ -20,16 +20,13 @@ from time import sleep
 from json import JSONDecoder
 import threading
 import logging
+from .constants import CREATE_CHANNEL, STATUS_CHANNEL, REMOVE_CHANNEL, RANK_CHANNEL
 from .cloud import Rank
 from .utils import check_not_none
 from redis.exceptions import RedisError
 
 
 _log = logging.getLogger('pycloud')
-CREATE_CHANNEL = 'year4000.pycloud.create'
-STATUS_CHANNEL = 'year4000.pycloud.status'
-REMOVE_CHANNEL = 'year4000.pycloud.remove'
-RANK_CHANNEL = 'year4000.pycloud.rank'
 
 
 class Messaging:

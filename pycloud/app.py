@@ -22,16 +22,13 @@ import logging
 import os
 import signal
 from time import sleep
-from .session import SESSION_DIR, DATA_DIR
+from .constants import SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, CONFIG_FILE, FILE_LOG, RUN_FOLDER, PID_FILE
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
-from .utils import remove, default_val
-from .cloud import Cloud, LOG_FOLDER, CONFIG_PATH, CONFIG_FILE, FILE_LOG
+from .utils import remove, default_val, required_paths
+from .cloud import Cloud
 from redis import Redis
 from redis.exceptions import ConnectionError
 import yaml
-
-RUN_FOLDER = '/var/run/year4000/pycloud/'
-PID_FILE = RUN_FOLDER + 'pycloud.pid'
 
 
 def start_daemon(nodes=None):
@@ -76,7 +73,6 @@ def shutdown_daemon(*args):
     if len(args) > 0:
         os.remove(PID_FILE)
         raise SystemExit('Terminating on signal number {0}'.format(args[0]))
-
 
 def main(nodes=None):
     """ Deploy all the needed threads """
@@ -151,15 +147,6 @@ def daemon_thread(target, name=None):
 
     thread.start()
     return thread
-
-def required_paths():
-    """ Make sure the needed folders exist """
-    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
-        if not os.path.exists(folder):
-            try:
-                os.makedirs(folder)
-            finally:
-                os.chmod(folder, 0o777) # hack fix for an existing bug
 
 
 if __name__ == '__main__':

@@ -18,19 +18,13 @@
 
 import os
 import sys
-import datetime
 from threading import Lock
 from json import JSONEncoder
 from time import time
+from .constants import CONFIG_PATH, CONFIG_FILE, LOG_FOLDER, FILE_LOG
 from .session import Session
 from .utils import generate_id, check_not_none
 import psutil
-
-
-CONFIG_PATH = '/etc/year4000/pycloud/'
-CONFIG_FILE = CONFIG_PATH + 'settings.yml'
-LOG_FOLDER = '/var/log/year4000/pycloud/'
-FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
 
 
 class Cloud:

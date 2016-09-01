@@ -22,6 +22,7 @@ import subprocess
 import shutil
 import time
 import random
+from .constants import SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER
 
 
 FNULL = open(os.devnull, 'w')
@@ -102,3 +103,13 @@ def copy_update(old, new, can_update=False):
     except OSError:
         message = 'run again with --update' if can_update else 'you have update it yourself'
         print('ERROR: {0} installed, {1}'.format(new, message))
+
+
+def required_paths():
+    """ Make sure the needed folders exist """
+    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+            finally:
+                os.chmod(folder, 0o777) # hack fix for an existing bug

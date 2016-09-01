@@ -21,12 +21,11 @@ import os
 import logging
 import socket
 from json import JSONEncoder
+from .constants import SESSION_DIR, DATA_DIR
 from .utils import check_not_none, generate_id, remove, default_val
 
 
 _log = logging.getLogger('pycloud')
-SESSION_DIR = '/var/run/year4000/pycloud/'
-DATA_DIR = '/var/lib/year4000/pycloud/'
 
 
 class Session:
