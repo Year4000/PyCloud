@@ -4,15 +4,12 @@ A python wrapper daemon that manages tmux sessions
 and provides a json control over the sessions
 with redis messaging channels.
 
-## Installation
+## Installation and Updating
 
-Run the python script `install.py`. When updating make sure to remove old paths.
+To install or update PyCloud it as simple of running pip3.
+Run the following command as root to get started.
 
-## Updating
-
-The system will try its best to self update with the update command. This works by using GitHub's Releases provided in the git repo.
-- Run `pycloudd update` to trigger the update checker.
-- Use `pycloudd update --force` to force an update of the current version.
+> $ pip3 install git+https://github.com/Year4000/PyCloud.git@v1.0.3
 
 ## Daemon Script
 
