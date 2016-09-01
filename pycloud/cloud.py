@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
-# 
+# Copyright 2016 Year4000.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -24,15 +24,7 @@ from json import JSONEncoder
 from time import time
 from .session import Session
 from .utils import generate_id, check_not_none
-
-try:
-    import psutil
-except ImportError:
-    psutil = None
-
-    if __name__ == "__main__":
-        print('Fail to import, make sure to run ./install.py first')
-        sys.exit(1)
+import psutil
 
 
 CONFIG_PATH = '/etc/year4000/pycloud/'

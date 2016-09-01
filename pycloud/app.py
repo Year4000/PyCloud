@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
+# Copyright 2016 Year4000.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,24 +22,13 @@ import logging
 import os
 import signal
 from time import sleep
-from .session import DATA_DIR
+from .session import SESSION_DIR, DATA_DIR
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .utils import remove, default_val
-from .cloud import Cloud, CONFIG_FILE, FILE_LOG
-
-try:
-    from redis import Redis
-    from redis.exceptions import ConnectionError
-    import yaml
-except ImportError:
-    Redis = None
-    yaml = None
-    ConnectionError = None
-
-    if __name__ == "__main__":
-        print('Fail to import, make sure to run ./install.py first')
-        sys.exit(1)
-
+from .cloud import Cloud, LOG_FOLDER, CONFIG_PATH, CONFIG_FILE, FILE_LOG
+from redis import Redis
+from redis.exceptions import ConnectionError
+import yaml
 
 RUN_FOLDER = '/var/run/year4000/pycloud/'
 PID_FILE = RUN_FOLDER + 'pycloud.pid'
@@ -172,9 +161,13 @@ if __name__ == '__main__':
     file_handler.setFormatter(formatter)
     _log.addHandler(file_handler)
 
-    # Make sure run folder exists
-    if not os.path.exists(RUN_FOLDER):
-        os.makedirs(RUN_FOLDER)
+    # Make sure the needed folders exist
+    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+            finally:
+                os.chmod(folder, 0o777) # hack fix for an existing bug
 
     # Get the number of test nodes
     test_nodes = None

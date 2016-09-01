@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
+# Copyright 2016 Year4000.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,13 +22,8 @@ import threading
 import logging
 from .cloud import Rank
 from .utils import check_not_none
+from redis.exceptions import RedisError
 
-try:
-    from redis.exceptions import RedisError
-except ImportError:
-    if __name__ == "__main__":
-        print('Fail to import, make sure to run ./install.py first')
-        sys.exit(1)
 
 _log = logging.getLogger('pycloud')
 CREATE_CHANNEL = 'year4000.pycloud.create'

@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
+# Copyright 2016 Year4000.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ import signal
 
 RUN_FOLDER = '/var/run/year4000/pycloud/'
 PID_FILE = RUN_FOLDER + 'pycloud.pid'
-USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status|update}}'
+USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status}}'
 
 
 class PyCloudError(BaseException):
@@ -91,7 +91,6 @@ def start():
     if get_pid(throw=False):
         raise PyCloudError('PyCloud is currently running...')
     else:
-        os.chdir('/opt/year4000/')
         os.system('python3 -m pycloud.app --daemon')
         print('PyCloud has been started...')
 
@@ -130,19 +129,6 @@ try:
                 pass
             finally:
                 start()
-        elif argument == 'update':
-            force = ' --force' if '--force' in sys.argv else ''
-            access_token = None
-
-            if '--token' in sys.argv:
-                pos = sys.argv.index('--token')
-
-                if pos + 1 < len(sys.argv):
-                    access_token = sys.argv[pos + 1]
-
-            token = '' if access_token is None else ' --token ' + access_token
-
-            os.system('cd /opt/year4000 ; python3 -m pycloud.updater' + force + token)
         else:
             raise PyCloudError(USAGE, sys.argv[0])
     else:

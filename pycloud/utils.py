@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-# Copyright 2015 Year4000.
-# 
+# Copyright 2016 Year4000.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -17,6 +17,7 @@
 """ Utilities to aid with the cloud system """
 
 import os
+import sys
 import subprocess
 import shutil
 import time
@@ -88,3 +89,16 @@ def default_val(var, default):
         var = default
 
     return var
+
+def copy_update(old, new, can_update=False):
+    """ Copy the files or folder but allow for updating """
+    try:
+        if '--update' in sys.argv and can_update:
+            remove(new)
+        elif os.path.exists(new):
+            raise OSError(new)
+
+        copy(old, new)
+    except OSError:
+        message = 'run again with --update' if can_update else 'you have update it yourself'
+        print('ERROR: {0} installed, {1}'.format(new, message))
