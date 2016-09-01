@@ -19,7 +19,7 @@ import sys
 from pycloud.utils import install, is_root, copy_update
 from pycloud.cloud import LOG_FOLDER, CONFIG_PATH, CONFIG_FILE
 from pycloud.session import SESSION_DIR, DATA_DIR
-from pycloud.app import RUN_FOLDER
+from pycloud.app import RUN_FOLDER, required_paths
 from pycloud.utils import is_root
 from pycloud import __version__
 from setuptools import setup, find_packages
@@ -35,6 +35,7 @@ install('tmux')
 print('INFO: Copying files to install path')
 copy_update('settings.yml', CONFIG_FILE)
 copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
+required_paths()
 
 print('INFO: Trying to let pycloud start at start up')
 try:

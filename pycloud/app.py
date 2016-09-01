@@ -152,6 +152,15 @@ def daemon_thread(target, name=None):
     thread.start()
     return thread
 
+def required_paths():
+    """ Make sure the needed folders exist """
+    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
+        if not os.path.exists(folder):
+            try:
+                os.makedirs(folder)
+            finally:
+                os.chmod(folder, 0o777) # hack fix for an existing bug
+
 
 if __name__ == '__main__':
     _log = logging.getLogger('pycloud')
@@ -162,12 +171,7 @@ if __name__ == '__main__':
     _log.addHandler(file_handler)
 
     # Make sure the needed folders exist
-    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
-        if not os.path.exists(folder):
-            try:
-                os.makedirs(folder)
-            finally:
-                os.chmod(folder, 0o777) # hack fix for an existing bug
+    required_paths()
 
     # Get the number of test nodes
     test_nodes = None
