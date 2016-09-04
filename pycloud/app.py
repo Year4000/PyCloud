@@ -22,7 +22,7 @@ import logging
 import os
 import signal
 from time import sleep
-from .constants import SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, CONFIG_FILE, FILE_LOG, RUN_FOLDER, PID_FILE
+from .constants import SESSION_DIR, DATA_DIR, LOG_DIR, CONFIG_DIR, CONFIG_FILE, LOG_FILE, PID_FILE
 from .handlers import CreateMessaging, StatusMessaging, RemoveMessaging, RankMessaging
 from .utils import remove, default_val, required_paths
 from .cloud import Cloud
@@ -41,7 +41,7 @@ def start_daemon(nodes=None):
         pid = os.fork()
 
         if pid == 0:
-            os.chdir(RUN_FOLDER)
+            os.chdir(SESSION_DIR)
             os.umask(0)
         else:
             sys.exit(0)
@@ -153,7 +153,7 @@ if __name__ == '__main__':
     _log = logging.getLogger('pycloud')
     _log.setLevel(logging.INFO)
     formatter = logging.Formatter('[%(asctime)s][%(levelname)s] %(message)s')
-    file_handler = logging.FileHandler(FILE_LOG)
+    file_handler = logging.FileHandler(LOG_FILE)
     file_handler.setFormatter(formatter)
     _log.addHandler(file_handler)
 

@@ -21,7 +21,6 @@ import sys
 from threading import Lock
 from json import JSONEncoder
 from time import time
-from .constants import CONFIG_PATH, CONFIG_FILE, LOG_FOLDER, FILE_LOG
 from .session import Session
 from .utils import generate_id, check_not_none
 import psutil

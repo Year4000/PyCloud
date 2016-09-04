@@ -29,9 +29,8 @@ import sys
 import os
 import time
 import signal
+from pycloud.constants import PID_FILE
 
-RUN_FOLDER = '/var/run/year4000/pycloud/'
-PID_FILE = RUN_FOLDER + 'pycloud.pid'
 USAGE = 'Usage: {0} {{start|stop|restart|force-reload|status}}'
 
 
@@ -91,7 +90,7 @@ def start():
     if get_pid(throw=False):
         raise PyCloudError('PyCloud is currently running...')
     else:
-        os.system('python3 -m pycloud.app --daemon')
+        os.system('sudo -u year4000 python3 -m pycloud.app --daemon')
         print('PyCloud has been started...')
 
 

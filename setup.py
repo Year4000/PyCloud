@@ -17,7 +17,7 @@
 import os
 import sys
 from pycloud.utils import install, is_root, copy_update, required_paths
-from pycloud.constants import LOG_FOLDER, CONFIG_PATH, CONFIG_FILE, SESSION_DIR, DATA_DIR, RUN_FOLDER
+from pycloud.constants import CONFIG_FILE
 from pycloud import __version__
 from setuptools import setup, find_packages
 
@@ -28,6 +28,7 @@ if not is_root():
 
 print('INFO: Checking and installing requirements')
 install('tmux')
+os.system('! id year4000 && useradd year4000 -M -s /usr/sbin/nologin -u 4000')
 
 print('INFO: Copying files to install path')
 copy_update('settings.yml', CONFIG_FILE)

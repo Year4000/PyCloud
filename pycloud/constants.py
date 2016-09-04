@@ -18,18 +18,16 @@
 
 import datetime
 
-RUN_FOLDER = '/var/run/year4000/pycloud/'
-PID_FILE = RUN_FOLDER + 'pycloud.pid'
 
-CONFIG_PATH = '/etc/year4000/pycloud/'
-CONFIG_FILE = CONFIG_PATH + 'settings.yml'
-LOG_FOLDER = '/var/log/year4000/pycloud/'
-FILE_LOG = LOG_FOLDER + str(datetime.date.today()) + ".log"
+SESSION_DIR = '/var/run/year4000/pycloud/'
+DATA_DIR = '/var/lib/year4000/pycloud/'
+LOG_DIR = '/var/log/year4000/pycloud/'
+CONFIG_DIR = '/etc/year4000/pycloud/'
+PID_FILE = SESSION_DIR + 'pycloud.pid'
+CONFIG_FILE = CONFIG_DIR + 'settings.yml'
+LOG_FILE = LOG_DIR + str(datetime.date.today()) + ".log"
 
 CREATE_CHANNEL = 'year4000.pycloud.create'
 STATUS_CHANNEL = 'year4000.pycloud.status'
 REMOVE_CHANNEL = 'year4000.pycloud.remove'
 RANK_CHANNEL = 'year4000.pycloud.rank'
-
-SESSION_DIR = '/var/run/year4000/pycloud/'
-DATA_DIR = '/var/lib/year4000/pycloud/'

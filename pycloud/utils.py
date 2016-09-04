@@ -22,7 +22,7 @@ import subprocess
 import shutil
 import time
 import random
-from .constants import SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER
+from .constants import SESSION_DIR, DATA_DIR, LOG_DIR, CONFIG_DIR
 
 
 FNULL = open(os.devnull, 'w')
@@ -94,7 +94,7 @@ def default_val(var, default):
 def copy_update(old, new, can_update=False):
     """ Copy the files or folder but allow for updating """
     try:
-        if '--update' in sys.argv and can_update:
+        if can_update:
             remove(new)
         elif os.path.exists(new):
             raise OSError(new)
@@ -107,9 +107,24 @@ def copy_update(old, new, can_update=False):
 
 def required_paths():
     """ Make sure the needed folders exist """
-    for folder in (SESSION_DIR, DATA_DIR, LOG_FOLDER, CONFIG_PATH, RUN_FOLDER):
-        if not os.path.exists(folder):
-            try:
+    def parent_dir(path):
+        return path[0:path.rindex('/', 0, len(path) - 1)]
+    # Create all folders related to pycloud and year4000
+    dirs = (
+        parent_dir(SESSION_DIR),
+        SESSION_DIR,
+        parent_dir(DATA_DIR),
+        DATA_DIR,
+        parent_dir(LOG_DIR),
+        LOG_DIR,
+        parent_dir(CONFIG_DIR),
+        CONFIG_DIR,
+    )
+    # Create and/or check permissions and ownership
+    for folder in dirs:
+        try:
+            if not os.path.exists(folder):
                 os.makedirs(folder)
-            finally:
-                os.chmod(folder, 0o777) # hack fix for an existing bug
+        finally:
+            os.chown(folder, 4000, 4000)
+            os.chmod(folder, 0o775)
