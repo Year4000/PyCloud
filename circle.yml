@@ -14,8 +14,8 @@ machine:
 
 # We require root
 dependencies:
-  pre:
-    - sudo su
+  override:
+    - sudo python3 setup.py install
 
 # Deploy the Docker image
 deployment:
