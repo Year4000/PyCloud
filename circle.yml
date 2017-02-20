@@ -20,7 +20,7 @@ dependencies:
 # Fake the tests untill we can get this working
 test:
   override:
-    - true
+    - echo 'Currently Disabled'
 
 # Deploy the Docker image
 deployment:
