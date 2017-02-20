@@ -22,12 +22,14 @@ from pycloud.constants import CONFIG_FILE
 from pycloud import __version__
 from setuptools import setup, find_packages
 
-# Must be ran as root
+# Must be ran as root for daemon things
 if not is_root():
     print('ERROR: Need to run as root to install system daemon')
     print('Waiting 5 secs...')
     time.sleep(5)
 
+# We have root lets install daemon things
+if is_root():
     print('INFO: Checking and installing requirements')
     install('tmux')
     os.system('! id year4000 && useradd year4000 -M -s /usr/sbin/nologin -u 4000')

@@ -73,7 +73,7 @@ class Session:
         """ Remove the session """
         _log.info('Remove session: ' + repr(self))
         if self.__use_docker:
-            Session.Docker(self.id).remove()
+            Session.Docker(self.id, 'None').remove()
         else:
             Session.Tmux(self.id).remove()
 
@@ -97,8 +97,9 @@ class Session:
             print(pretty, file=file)
 
         if self.__use_docker:
-            # The script is just the docker image to use
-            Session.Docker(self.id, self._session_script).create()
+            with open(self._session_script, 'r') as script:
+                # The script is just the docker image to use
+                Session.Docker(self.id, ''.join(script.readlines())[:-1]).create()
         else:
             self.__pid = Session.Tmux(self.id).create(self._session_script)
 
@@ -152,7 +153,7 @@ class Session:
             and name is the docker image to use for the container.
             You must have both for Docker to work.
             """
-            self.session = check_not_none(session)
+            self.session = 'pycloud_' + check_not_none(session)
             self.name = check_not_none(name)
 
         def create(self):
