@@ -8,3 +8,5 @@ services:
     build: .
     image: year4000/pycloud
     container_name: y4k_pycloud
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock

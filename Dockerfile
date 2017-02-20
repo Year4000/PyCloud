@@ -7,4 +7,6 @@ ADD . .
 
 RUN pip3 install . && rm -Rf /tmp
 
+ENV PYCLOUD_USE_DOCKER=true
+
 CMD ["python3", "-m", "pycloud.app"]

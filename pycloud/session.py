@@ -20,6 +20,8 @@ import subprocess
 import os
 import logging
 import socket
+import docker
+import docker.errors
 from json import JSONEncoder
 from .constants import SESSION_DIR, DATA_DIR
 from .utils import check_not_none, generate_id, remove, default_val
@@ -30,6 +32,7 @@ _log = logging.getLogger('pycloud')
 
 class Session:
     """ The session object that represents the session """
+    __use_docker = os.environ.get('PYCLOUD_USE_DOCKER') is not None
 
     def __init__(self, cloud, script):
         """ Generate this session with the cloud instance """
@@ -69,9 +72,12 @@ class Session:
     def remove(self):
         """ Remove the session """
         _log.info('Remove session: ' + repr(self))
-        Session.Tmux(self.id).remove()
+        if self.__use_docker:
+            Session.Docker(self.id).remove()
+        else:
+            Session.Tmux(self.id).remove()
 
-        if self.pid > 0:
+        if self.__pid > 0:
             try:
                 subprocess.call("kill -9 " + str(self.pid))
             except FileNotFoundError:
@@ -90,7 +96,12 @@ class Session:
             })
             print(pretty, file=file)
 
-        self.pid = Session.Tmux(self.id).create(self._session_script)
+        if self.__use_docker:
+            # The script is just the docker image to use
+            Session.Docker(self.id, self._session_script).create()
+        else:
+            self.__pid = Session.Tmux(self.id).create(self._session_script)
+
         _log.info('Starting session: ' + str(self))
 
     def __repr__(self):
@@ -99,7 +110,7 @@ class Session:
 
     def __str__(self):
         """ Print out the id pid and port of this session """
-        return "id: {0}, pid: {1}, port: {2}".format(self.id, self.pid, self._port)
+        return "id: {0}, pid: {1}, port: {2}".format(self.id, self.__pid, self._port)
 
     class Tmux:
         """ The wrapper to handle TMUX """
@@ -130,3 +141,32 @@ class Session:
             """ Remove tmux session """
             args = ('kill-session', '-t', self.session)
             return Session.Tmux.__cmd(args).pid
+
+    class Docker:
+        """ Wrapper to create docker containers """
+        client = docker.from_env()
+
+        def __init__(self, session, name):
+            """
+            With docker the args are reversed session is the docker container name
+            and name is the docker image to use for the container.
+            You must have both for Docker to work.
+            """
+            self.session = check_not_none(session)
+            self.name = check_not_none(name)
+
+        def create(self):
+            """ Create the docker container """
+            self.client.containers.run(self.name, detach=True, name=self.session)
+            return 0
+
+        def remove(self):
+            """ remove the docker container """
+            try:
+                container = self.client.containers.get(self.session)
+                container.stop()
+                container.remove()
+            except docker.errors.NotFound:
+                _log.warning('Docker Container Not Found: {}'.format(self.session))
+
+            return 0
