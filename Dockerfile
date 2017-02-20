@@ -7,4 +7,4 @@ ADD . .
 
 RUN pip3 install . && rm -Rf /tmp
 
-CMD ['python3', '-m', 'pycloud.app']
+CMD ["python3", "-m", "pycloud.app"]
