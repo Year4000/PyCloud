@@ -1,0 +1,10 @@
+---
+# This is the docker compose file to help with the creation of images
+
+version: '2'
+
+services:
+  pycloud:
+    build: .
+    image: year4000/pycloud
+    container_name: y4k_pycloud
