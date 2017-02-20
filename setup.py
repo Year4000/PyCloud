@@ -31,9 +31,9 @@ install('tmux')
 os.system('! id year4000 && useradd year4000 -M -s /usr/sbin/nologin -u 4000')
 
 print('INFO: Copying files to install path')
+required_paths()
 copy_update('settings.yml', CONFIG_FILE)
 copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
-required_paths()
 
 print('INFO: Trying to let pycloud start at start up')
 try:
