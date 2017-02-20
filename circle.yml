@@ -12,6 +12,11 @@ machine:
   python:
     version: 3.6.0
 
+# We require root
+dependencies:
+  pre:
+    - sudo su
+
 # Deploy the Docker image
 deployment:
   master:
