@@ -8,6 +8,6 @@ hostname:
 
 # The redis connection host, port, and password
 redis:
-  host: "localhost"
+  host: "dockerhost.year4000.net"
   port: 6379
   password:
