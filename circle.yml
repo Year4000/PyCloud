@@ -9,6 +9,8 @@ machine:
     - pip install --upgrade docker-compose
   services:
     - docker
+  python:
+    version: 3.6.0
 
 # Deploy the Docker image
 deployment:
