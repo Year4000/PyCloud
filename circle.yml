@@ -15,7 +15,7 @@ machine:
 # We require root
 dependencies:
   override:
-    - sudo python3 setup.py install
+    - echo 'Currently Disabled'
 
 # Deploy the Docker image
 deployment:
