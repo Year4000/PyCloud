@@ -16,6 +16,7 @@
 
 import os
 import sys
+import time
 from pycloud.utils import install, is_root, copy_update, required_paths
 from pycloud.constants import CONFIG_FILE
 from pycloud import __version__
@@ -23,23 +24,24 @@ from setuptools import setup, find_packages
 
 # Must be ran as root
 if not is_root():
-    print('ERROR: Need to run as root')
-    sys.exit(1)
+    print('ERROR: Need to run as root to install system daemon')
+    print('Waiting 5 secs...')
+    time.sleep(5)
 
-print('INFO: Checking and installing requirements')
-install('tmux')
-os.system('! id year4000 && useradd year4000 -M -s /usr/sbin/nologin -u 4000')
+    print('INFO: Checking and installing requirements')
+    install('tmux')
+    os.system('! id year4000 && useradd year4000 -M -s /usr/sbin/nologin -u 4000')
 
-print('INFO: Copying files to install path')
-required_paths()
-copy_update('settings.yml', CONFIG_FILE)
-copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
+    print('INFO: Copying files to install path')
+    required_paths()
+    copy_update('settings.yml', CONFIG_FILE)
+    copy_update('pycloudd', '/etc/init.d/pycloudd', can_update=True)
 
-print('INFO: Trying to let pycloud start at start up')
-try:
-    os.system('update-rc.d pycloudd defaults')
-except OSError:
-    print('ERROR: Could not run command auto you have to set it up yourself')
+    print('INFO: Trying to let pycloud start at start up')
+    try:
+        os.system('update-rc.d pycloudd defaults')
+    except OSError:
+        print('ERROR: Could not run command auto you have to set it up yourself')
 
 # Run the needed things from pip
 setup(
