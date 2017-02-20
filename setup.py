@@ -50,6 +50,6 @@ setup(
     description='Manages the PyCloud daemon by providing wrapper for common PyCloud tasks',
     author='Year4000',
     url='https://github.com/Year4000/PyCloud',
-    install_requires=['redis', 'PyYAML', 'psutil'],
+    install_requires=['redis', 'PyYAML', 'psutil', 'docker'],
     packages = find_packages(),
 )
