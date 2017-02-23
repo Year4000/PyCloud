@@ -74,6 +74,7 @@ def shutdown_daemon(*args):
         os.remove(PID_FILE)
         raise SystemExit('Terminating on signal number {0}'.format(args[0]))
 
+
 def main(nodes=None):
     """ Deploy all the needed threads """
     nodes = int(0 if nodes is None else nodes)
