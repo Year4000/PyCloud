@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import sys
 import time
 from pycloud.utils import install, is_root, copy_update, required_paths
 from pycloud.constants import CONFIG_FILE
@@ -53,5 +52,5 @@ setup(
     author='Year4000',
     url='https://github.com/Year4000/PyCloud',
     install_requires=['redis', 'PyYAML', 'psutil', 'docker'],
-    packages = find_packages(),
+    packages=find_packages(),
 )
