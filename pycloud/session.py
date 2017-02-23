@@ -23,7 +23,7 @@ import socket
 import docker
 import docker.errors
 from json import JSONEncoder
-from .constants import SESSION_DIR, DATA_DIR
+from .constants import DATA_DIR
 from .utils import check_not_none, generate_id, remove, default_val
 
 
@@ -79,7 +79,7 @@ class Session:
 
         if self.__pid > 0:
             try:
-                subprocess.call("kill -9 " + str(self.pid))
+                subprocess.call("kill -9 " + str(self.__pid))
             except FileNotFoundError:
                 # Process is not running
                 pass
