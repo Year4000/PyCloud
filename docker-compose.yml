@@ -10,3 +10,11 @@ services:
     container_name: y4k_pycloud
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./pycloud/:/usr/local/lib/python3.6/site-packages/pycloud/
+    links:
+      - redis
+  redis:
+    image: redis
+    container_name: y4k_redis
+    ports:
+      - 6379:6379
