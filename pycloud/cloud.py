@@ -17,7 +17,6 @@
 """ The daemon process that manages the servers """
 
 import os
-import sys
 from threading import Lock
 from json import JSONEncoder
 from time import time
@@ -169,13 +168,26 @@ class Rank:
             self.time = check_not_none(unix_time, 'Must include unix time of updated')
             self.sessions = check_not_none(sessions, 'Must include the sessions the cloud is running')
 
-    __lt__ = lambda self, other: self.score < other.score
-    __le__ = lambda self, other: self.score <= other.score
-    __gt__ = lambda self, other: self.score > other.score
-    __ge__ = lambda self, other: self.score >= other.score
-    __eq__ = lambda self, other: self.id == other.id
-    __ne__ = lambda self, other: self.id != other.id
-    __hash__ = lambda self: int(self.id, 16)
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __le__(self, other):
+        return self.score <= other.score
+
+    def __gt__(self, other):
+        return self.score > other.score
+
+    def __ge__(self, other):
+        return self.score >= other.score
+
+    def __eq__(self, other):
+        return self.id == other.id
+
+    def __ne__(self, other):
+        return self.id != other.id
+
+    def __hash__(self):
+        return int(self.id, 16)
 
     def __str__(self):
         return JSONEncoder().encode({
