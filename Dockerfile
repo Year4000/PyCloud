@@ -9,6 +9,6 @@ RUN pip3 install . && rm -Rf /tmp/
 
 ENV PYCLOUD_USE_DOCKER=true
 
-STOPSIGNAL SIGABRT
+STOPSIGNAL --time=600 SIGINT
 
 CMD ["python3", "-m", "pycloud.app"]
