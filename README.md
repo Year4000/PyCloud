@@ -29,7 +29,7 @@ The limitation is that you must give the PyCloud container access to the docker 
 Also note that the arg `port` in the json part is the port of your application.
 PyCloud will create an ephemeral port and assign it with the port on your container.
 
-> docker run -v /var/run/docker.sock:/var/run/docker.sock year4000/pycloud
+> docker run -v /var/run/docker.sock:/var/run/docker.sock year4000/pycloud:v1.0.4
 
 Example Script String:
 
