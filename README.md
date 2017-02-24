@@ -7,7 +7,7 @@ A python wrapper daemon that manages sessions and provides a json control over t
 To install or update PyCloud it as simple of running pip3.
 Run the following command as root to get started.
 
-> $ pip3 install git+https://github.com/Year4000/PyCloud.git@v1.0.3
+> $ pip3 install git+https://github.com/Year4000/PyCloud.git@v1.0.4
 
 ## Daemon Script
 
