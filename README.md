@@ -1,4 +1,4 @@
-# PyCloud
+# PyCloud [![CircleCI](https://circleci.com/gh/Year4000/PyCloud.svg?style=svg)](https://circleci.com/gh/Year4000/PyCloud)
 
 A python wrapper daemon that manages sessions and provides a json control over the sessions with redis messaging channels.
 
