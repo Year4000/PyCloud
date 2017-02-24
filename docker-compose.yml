@@ -1,5 +1,7 @@
 ---
 # This is the docker compose file to help with the creation of images
+# The command bellow will help you clear out any lost docker containers
+# docker kill `docker ps | grep pycloud_ | awk '{print $13}'`
 
 version: '2'
 

@@ -1,8 +1,6 @@
 # PyCloud
 
-A python wrapper daemon that manages tmux sessions
-and provides a json control over the sessions
-with redis messaging channels.
+A python wrapper daemon that manages sessions and provides a json control over the sessions with redis messaging channels.
 
 ## Installation and Updating
 
@@ -22,6 +20,25 @@ In single session mode
 
 In system daemon mode
 > python3 -m pycloud.app --daemon
+
+## Docker
+
+We support Docker and when you run this in a Docker container the script string bellow will let you select other Docker images to run.
+The first line is the image you want to run and the rest of the file is a json config object for `docker-py`.
+The limitation is that you must give the PyCloud container access to the docker socket `/var/run/docker.sock`.
+Also note that the arg `port` in the json part is the port of your application.
+PyCloud will create an ephemeral port and assign it with the port on your container.
+
+> docker run -v /var/run/docker.sock:/var/run/docker.sock year4000/pycloud
+
+Example Script String:
+
+```
+year4000/pycloud
+{
+    "port": 80
+}
+```
 
 ## Redis Channels
 
