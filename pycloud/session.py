@@ -97,9 +97,17 @@ class Session:
             print(pretty, file=file)
 
         if self.__use_docker:
+            # The script is just the docker image to use with options as keyword args
             with open(self._session_script, 'r') as script:
-                # The script is just the docker image to use
-                Session.Docker(self.id, ''.join(script.readlines())[:-1]).create()
+                options = {}
+                docker_image = script.readline().rstrip()
+                for line in script.readlines():
+                    if '=' not in line or line.startswith('#'):
+                        continue
+                    key, value = line.rstrip().split('=', 1)
+                    options[key] = value
+
+                Session.Docker(self.id, docker_image).create(self._port, options)
         else:
             self.__pid = Session.Tmux(self.id).create(self._session_script)
 
@@ -156,9 +164,11 @@ class Session:
             self.session = 'pycloud_' + check_not_none(session)
             self.name = check_not_none(name)
 
-        def create(self):
+        def create(self, port, options):
             """ Create the docker container """
-            self.client.containers.run(self.name, detach=True, name=self.session)
+            ports = {options['port'] + '/tcp': port}
+            del options['port']
+            self.client.containers.run(self.name, detach=True, name=self.session, ports=ports, **options)
             return 0
 
         def remove(self):
