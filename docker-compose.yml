@@ -11,7 +11,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./pycloud/:/usr/local/lib/python3.6/site-packages/pycloud/
-    links:
+    depends_on:
       - redis
   redis:
     image: redis
