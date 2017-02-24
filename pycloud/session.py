@@ -22,7 +22,7 @@ import logging
 import socket
 import docker
 import docker.errors
-from json import JSONEncoder
+from json import JSONEncoder, JSONDecoder
 from .constants import DATA_DIR
 from .utils import check_not_none, generate_id, remove, default_val
 
@@ -99,14 +99,8 @@ class Session:
         if self.__use_docker:
             # The script is just the docker image to use with options as keyword args
             with open(self._session_script, 'r') as script:
-                options = {}
                 docker_image = script.readline().rstrip()
-                for line in script.readlines():
-                    if '=' not in line or line.startswith('#'):
-                        continue
-                    key, value = line.rstrip().split('=', 1)
-                    options[key] = value
-
+                options = JSONDecoder().decode(''.join(script.readlines()).rstrip().replace('\'', '"', 2048))
                 Session.Docker(self.id, docker_image).create(self._port, options)
         else:
             self.__pid = Session.Tmux(self.id).create(self._session_script)
@@ -164,11 +158,11 @@ class Session:
             self.session = 'pycloud_' + check_not_none(session)
             self.name = check_not_none(name)
 
-        def create(self, port, options):
+        def create(self, port, json):
             """ Create the docker container """
-            ports = {options['port'] + '/tcp': port}
-            del options['port']
-            self.client.containers.run(self.name, detach=True, name=self.session, ports=ports, **options)
+            ports = {str(json['port']) + '/tcp': port}
+            del json['port']
+            self.client.containers.run(self.name, detach=True, name=self.session, ports=ports, **json)
             return 0
 
         def remove(self):
